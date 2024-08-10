@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meta_bio/ui/screen/auth/auth.dart';
+import 'package:meta_bio/ui/screen/dashboard/dashboard.dart';
 
 part 'splash_event.dart';
 
@@ -16,9 +17,8 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
   SplashBloc(this._flutterSecureStorage) : super(const SplashState.initial()) {
     on<SplashStarted>((event, emit) async {
       var token = await _flutterSecureStorage.read(key: 'token');
-      var nextScreen = token == null
-          ? const AuthScreen()
-          : const SizedBox();//TODO: Add the next screen after login
+      var nextScreen =
+          token == null ? const AuthScreen() : const DashboardScreen();
 
       await Future.delayed(const Duration(seconds: 3), () {
         emit(SplashState.openScreen(nextScreen: nextScreen));
