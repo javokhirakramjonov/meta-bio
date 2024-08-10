@@ -35,7 +35,7 @@ class AuthScreen extends StatelessWidget {
 
   Widget _buildBackgroundContainer() {
     return Container(
-      color: const Color(0xFFF7FFF7),
+      color: const Color(0xFF171717),
       width: double.infinity,
       height: double.infinity,
     );
@@ -90,6 +90,7 @@ class AuthScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Card(
+        color: const Color(0xFF0D0D0D),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -129,7 +130,7 @@ class AuthScreen extends StatelessWidget {
           context.read<AuthBloc>().add(AuthEvent.phoneNumberChanged(newPhoneNumber: value));
         },
         decoration: const InputDecoration(
-          hintText: 'Phone Number',
+          labelText: 'Phone Number',
           border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
@@ -148,7 +149,7 @@ class AuthScreen extends StatelessWidget {
         },
         obscureText: !state.isPasswordVisible,
         decoration: InputDecoration(
-          hintText: 'Password',
+          labelText: 'Password',
           border: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
