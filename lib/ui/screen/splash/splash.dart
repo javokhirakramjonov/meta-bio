@@ -22,13 +22,12 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: BlocConsumer<SplashBloc, SplashState>(
         listener: (context, state) {
-          if (state is SplashOpenDashboardScreeen) {
-            // Navigator.pushAndRemoveUntil(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => const DashboardScreen()),
-            //       (route) => false,
-            // );
-            print("Hello");
+          if (state is SplashOpenNextScreen) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => state.nextScreen),
+                  (route) => false,
+            );
           }
         },
         builder: (context, state) {
