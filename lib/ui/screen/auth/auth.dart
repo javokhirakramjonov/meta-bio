@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/ui/component/loading_view.dart';
 import 'package:meta_bio/ui/screen/auth/bloc/auth_bloc.dart';
+import 'package:meta_bio/ui/screen/dashboard/dashboard.dart';
 import 'package:meta_bio/ui/theme/my_theme.dart';
 
 class AuthScreen extends StatelessWidget {
@@ -14,7 +15,11 @@ class AuthScreen extends StatelessWidget {
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if(state.loginRequestState is RequestStateSuccess) {
-            // Navigate to the next screen
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const DashboardScreen()),
+              (route) => false,
+            );
           } else if(state.loginRequestState is RequestStateError) {
 
           }

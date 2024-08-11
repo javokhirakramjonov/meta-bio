@@ -1,14 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meta_bio/ui/component/loading_view.dart';
+import 'package:meta_bio/ui/screen/profile/bloc/profile_bloc.dart';
+import 'package:meta_bio/ui/screen/update_password/update_password.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final TextEditingController firstNameController =
+      TextEditingController(text: "");
+  final TextEditingController lastNameController =
+      TextEditingController(text: "");
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF171717),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(16),
+          ),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.primary,
         elevation: 0,
         title: const Text(
           'Profile',
@@ -20,98 +40,201 @@ class ProfileScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            color: const Color(0xFF0D0D0D),
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+      body: BlocConsumer<ProfileBloc, ProfileState>(
+        listener: (context, state) {
+          setState(() {
+            firstNameController.text = state.profile?.firstName ?? "";
+            lastNameController.text = state.profile?.lastName ?? "";
+          });
+        },
+        builder: (context, state) {
+          return Stack(children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Center(
-                    child: Stack(
-                      children: [
-                        const CircleAvatar(
-                          radius: 32,
-                          backgroundImage:
-                              AssetImage('assets/images/avatar.png'),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: CircleAvatar(
-                            radius: 12,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
-                            child: Icon(
-                              Icons.add_a_photo,
-                              color: Theme.of(context).primaryColor,
-                              size: 14,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 56),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: TextFormField(
-                      initialValue: "John Doe",
-                      decoration: InputDecoration(
-                        labelText: 'Name',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        prefixIcon: const Icon(Icons.person),
-                        suffixIcon: const Icon(Icons.edit),
-                      ),
-                    ),
-                  ),
+                  const SizedBox(height: 20),
+                  _buildProfileCard(context),
                   const SizedBox(height: 16),
+                  _buildChangePasswordButton(context),
                 ],
               ),
             ),
+            state.isLoading ? loadingView(context) : const SizedBox.shrink()
+          ]);
+        },
+      ),
+    );
+  }
+
+  Widget _buildProfileCard(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      color: const Color(0xFF0D0D0D),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildProfileImage(context),
+              const SizedBox(height: 56),
+              _buildFirstNameField(context),
+              const SizedBox(height: 16),
+              _buildLastNameField(context),
+              const SizedBox(height: 16),
+            ],
           ),
-          const SizedBox(height: 16),
-          Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(16),
-              onTap: () {
-                ///TODO: implement navigation to change password screen
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    const Expanded(
-                      child: Text(
-                        "Parolni o'zgartirish",
-                        style: TextStyle(
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                    Icon(
-                      Icons.arrow_forward_ios,
-                      color: Theme.of(context).colorScheme.primary,
-                      size: 18,
-                    ),
-                  ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileImage(BuildContext context) {
+    return Center(
+      child: Stack(
+        children: [
+          const CircleAvatar(
+            radius: 64,
+            backgroundImage: AssetImage('assets/images/avatar.png'),
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: GestureDetector(
+              child: const CircleAvatar(
+                radius: 20,
+                child: Icon(
+                  Icons.add_a_photo,
+                  size: 20,
                 ),
               ),
+              onTap: () {
+                // TODO: Implement photo change functionality
+              },
             ),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildFirstNameField(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: TextFormField(
+        controller: firstNameController,
+        decoration: InputDecoration(
+          labelText: 'First Name',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          suffixIcon: const Icon(Icons.edit),
+        ),
+        textInputAction: TextInputAction.done,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'First name cannot be empty or blank';
+          }
+          return null;
+        },
+        onFieldSubmitted: (value) {
+          if (_formKey.currentState!.validate()) {
+            context.read<ProfileBloc>().add(
+                  const ProfileEvent.updateProfile(),
+                );
+          }
+        },
+        onChanged: (value) {
+          if (_formKey.currentState!.validate()) {
+            context.read<ProfileBloc>().add(
+                  ProfileEvent.firstNameChanged(value),
+                );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildLastNameField(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: TextFormField(
+        controller: lastNameController,
+        decoration: InputDecoration(
+          labelText: 'Last Name',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          suffixIcon: const Icon(Icons.edit),
+        ),
+        textInputAction: TextInputAction.done,
+        validator: (value) {
+          if (value == null || value.trim().isEmpty) {
+            return 'Last name cannot be empty or blank';
+          }
+          return null;
+        },
+        onFieldSubmitted: (value) {
+          if (_formKey.currentState!.validate()) {
+            context.read<ProfileBloc>().add(
+                  const ProfileEvent.updateProfile(),
+                );
+          }
+        },
+        onChanged: (value) {
+          if (_formKey.currentState!.validate()) {
+            context.read<ProfileBloc>().add(
+                  ProfileEvent.lastNameChanged(value),
+                );
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildChangePasswordButton(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const UpdatePasswordScreen()),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            const Expanded(
+              child: Text(
+                "Change password",
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Theme.of(context).colorScheme.primary,
+              size: 18,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    BlocProvider.of<ProfileBloc>(context).add(const ProfileEvent.started());
+    super.initState();
   }
 }

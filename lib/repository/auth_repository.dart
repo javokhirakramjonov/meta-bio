@@ -1,13 +1,19 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:meta_bio/domain/profile.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/service/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRepository {
   late Dio _dio;
   final FlutterSecureStorage _secureStorage;
+  final SharedPreferences _sharedPreferences;
 
-  AuthRepository(ApiService apiService, this._secureStorage) {
+  AuthRepository(
+      ApiService apiService, this._secureStorage, this._sharedPreferences) {
     _dio = apiService.dio;
   }
 
@@ -23,15 +29,47 @@ class AuthRepository {
 
       bool isLoggedIn = response.statusCode == 200;
 
-      if (isLoggedIn) {
-        await _secureStorage.write(
-            key: 'token', value: response.data['accessToken']);
+      if (!isLoggedIn) {
+        return const RequestState.error(
+            'Phone number or password is incorrect');
       }
 
-      if(isLoggedIn) {
+      _loadProfile();
+
+      await _secureStorage.write(
+          key: 'token', value: response.data['accessToken']);
+      await _secureStorage.write(key: 'password', value: password);
+
+      if (isLoggedIn) {
         return const RequestState.success();
       } else {
-        return const RequestState.error('Phone number or password is incorrect');
+        return const RequestState.error(
+            'Phone number or password is incorrect');
+      }
+    } catch (e) {
+      return RequestState.error(e.toString());
+    }
+  }
+
+  Future<void> _loadProfile() async {
+    final response = await _dio.get('/api/users/profile');
+    final profile = Profile.fromJson(response.data['data']);
+
+    await _sharedPreferences.setString('profile', jsonEncode(profile));
+  }
+
+  Future<RequestState<void>> updateProfile(Profile profile) async {
+    try {
+      final response = await _dio.put(
+        '/api/users/${profile.id}',
+        data: profile.toJson(),
+      );
+
+      if (response.statusCode == 200) {
+        await _sharedPreferences.setString('profile', jsonEncode(profile));
+        return const RequestState.success();
+      } else {
+        return const RequestState.error('Failed to update profile');
       }
     } catch (e) {
       return RequestState.error(e.toString());
