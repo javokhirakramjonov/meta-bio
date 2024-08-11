@@ -8,8 +8,10 @@ class Profile {
   final String firstName;
   final String lastName;
   final String phoneNumber;
+  final String avatar;
 
-  Profile(this.id, this.firstName, this.lastName, this.phoneNumber);
+  Profile(
+      this.id, this.firstName, this.lastName, this.phoneNumber, this.avatar);
 
   factory Profile.fromJson(Map<String, dynamic> json) =>
       _$ProfileFromJson(json);
@@ -21,12 +23,14 @@ class Profile {
     String? firstName,
     String? lastName,
     String? phoneNumber,
+    String? avatar,
   }) {
     return Profile(
       id ?? this.id,
       firstName ?? this.firstName,
       lastName ?? this.lastName,
       phoneNumber ?? this.phoneNumber,
+      avatar ?? this.avatar,
     );
   }
 }

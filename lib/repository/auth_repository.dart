@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:meta_bio/domain/profile.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/service/api_service.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRepository {
@@ -34,11 +36,11 @@ class AuthRepository {
             'Phone number or password is incorrect');
       }
 
-      _loadProfile();
-
       await _secureStorage.write(
           key: 'token', value: response.data['accessToken']);
       await _secureStorage.write(key: 'password', value: password);
+
+      _loadProfile();
 
       if (isLoggedIn) {
         return const RequestState.success();
@@ -53,7 +55,11 @@ class AuthRepository {
 
   Future<void> _loadProfile() async {
     final response = await _dio.get('/api/users/profile');
-    final profile = Profile.fromJson(response.data['data']);
+    var profile = Profile.fromJson(response.data['data']);
+
+    var avatarFile = await downloadImage(profile.avatar, profile.avatar);
+
+    profile = profile.copyWith(avatar: avatarFile.path);
 
     await _sharedPreferences.setString('profile', jsonEncode(profile));
   }
@@ -74,5 +80,16 @@ class AuthRepository {
     } catch (e) {
       return RequestState.error(e.toString());
     }
+  }
+
+  Future<File> downloadImage(String url, String fileName) async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    final filePath = '${directory.path}/images/$fileName';
+
+    Dio dio = Dio();
+    await dio.download(url, filePath);
+
+    return File(filePath);
   }
 }

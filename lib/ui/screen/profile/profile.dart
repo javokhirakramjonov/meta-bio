@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta_bio/ui/component/loading_view.dart';
@@ -54,7 +56,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 children: [
                   const SizedBox(height: 20),
-                  _buildProfileCard(context),
+                  _buildProfileCard(context, state.profile?.avatar),
                   const SizedBox(height: 16),
                   _buildChangePasswordButton(context),
                 ],
@@ -67,7 +69,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileCard(BuildContext context) {
+  Widget _buildProfileCard(BuildContext context, String? avatar) {
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -80,7 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildProfileImage(context),
+              _buildProfileImage(context, avatar),
               const SizedBox(height: 56),
               _buildFirstNameField(context),
               const SizedBox(height: 16),
@@ -93,13 +95,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileImage(BuildContext context) {
+  Widget _buildProfileImage(BuildContext context, String? avatar) {
     return Center(
       child: Stack(
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 64,
-            backgroundImage: AssetImage('assets/images/avatar.png'),
+            backgroundImage: avatar == null
+                ? const AssetImage('assets/images/avatar.png')
+                : FileImage(File(avatar)),
           ),
           Positioned(
             bottom: 0,
