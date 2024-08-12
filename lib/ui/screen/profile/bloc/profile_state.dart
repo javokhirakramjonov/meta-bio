@@ -6,7 +6,7 @@ class ProfileState with _$ProfileState {
     Profile? profile,
     @Default(RequestState.initial())
     RequestState<void> updateProfileRequestState,
-  }) = _Initial;
+      @Default(false) bool shouldLogOut}) = _Initial;
 
   const ProfileState._();
 

@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/ui/component/loading_view.dart';
 import 'package:meta_bio/ui/screen/profile/bloc/profile_bloc.dart';
+import 'package:meta_bio/ui/screen/splash/splash.dart';
 import 'package:meta_bio/ui/screen/update_password/update_password.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -32,6 +34,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
             firstNameController.text = state.profile?.firstName ?? "";
             lastNameController.text = state.profile?.lastName ?? "";
           });
+
+          final updateProfileRequestState = state.updateProfileRequestState;
+
+          if (updateProfileRequestState is RequestStateSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Profile updated successfully'),
+              ),
+            );
+          } else if (updateProfileRequestState is RequestStateError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(updateProfileRequestState.message),
+              ),
+            );
+          }
+
+          if (state.shouldLogOut) {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const SplashScreen()),
+              (route) => false,
+            );
+          }
         },
         builder: (context, state) {
           return Scaffold(
@@ -63,6 +89,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _buildProfileCard(context, state.profile?.avatar),
                     const SizedBox(height: 16),
                     _buildChangePasswordButton(context),
+                    const SizedBox(height: 16),
+                    _buildLogOutButton(context),
                   ],
                 ),
               ),
@@ -233,6 +261,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Icon(
               Icons.arrow_forward_ios,
               color: Theme.of(context).colorScheme.primary,
+              size: 18,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogOutButton(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          foregroundColor: Theme.of(context).colorScheme.error),
+      onPressed: () {
+        context.read<ProfileBloc>().add(const ProfileEvent.logout());
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                "Log Out",
+                style: TextStyle(
+                    fontSize: 16, color: Theme.of(context).colorScheme.error),
+              ),
+            ),
+            Icon(
+              Icons.logout,
+              color: Theme.of(context).colorScheme.error,
               size: 18,
             ),
           ],

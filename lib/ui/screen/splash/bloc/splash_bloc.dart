@@ -28,7 +28,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
       var nextScreen =
           token == null ? const AuthScreen() : const DashboardScreen();
 
-      await Future.delayed(const Duration(seconds: 3), () {
+      await Future.delayed(const Duration(seconds: 5), () {
         emit(SplashState.openScreen(nextScreen: nextScreen));
       });
     });

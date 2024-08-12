@@ -10,4 +10,6 @@ class ProfileEvent with _$ProfileEvent {
   const factory ProfileEvent.lastNameChanged(String lastName) = LastNameChanged;
 
   const factory ProfileEvent.updateProfile() = UpdateProfile;
+
+  const factory ProfileEvent.logout() = Logout;
 }

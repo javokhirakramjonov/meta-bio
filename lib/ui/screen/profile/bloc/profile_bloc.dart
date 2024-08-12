@@ -21,6 +21,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<FirstNameChanged>(_firstNameChanged);
     on<LastNameChanged>(_lastNameChanged);
     on<UpdateProfile>(_updateProfile);
+    on<Logout>(_logout);
   }
 
   void _started(Started event, Emitter<ProfileState> emit) async {
@@ -54,5 +55,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     final response = await _authRepository.updateProfile(state.profile!);
 
     emit(state.copyWith(updateProfileRequestState: response));
+  }
+
+  void _logout(Logout event, Emitter<ProfileState> emit) async {
+    await _sharedPreferences.clear();
+    emit(state.copyWith(shouldLogOut: true));
   }
 }
