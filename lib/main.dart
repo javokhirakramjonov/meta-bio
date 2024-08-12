@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:meta_bio/repository/auth_repository.dart';
 import 'package:meta_bio/service/api_service.dart';
-import 'package:meta_bio/ui/screen/auth/bloc/auth_bloc.dart';
-import 'package:meta_bio/ui/screen/profile/bloc/profile_bloc.dart';
-import 'package:meta_bio/ui/screen/splash/bloc/splash_bloc.dart';
 import 'package:meta_bio/ui/screen/splash/splash.dart';
-import 'package:meta_bio/ui/screen/update_password/bloc/update_password_bloc.dart';
 import 'package:meta_bio/ui/theme/my_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -24,24 +19,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-            create: (context) => SplashBloc(GetIt.I.get(), GetIt.I.get())),
-        BlocProvider(create: (context) => AuthBloc(GetIt.I.get())),
-        BlocProvider(
-            create: (context) => ProfileBloc(GetIt.I.get(), GetIt.I.get())),
-        BlocProvider(create: (context) => UpdatePasswordBloc()),
-      ],
-      child: MaterialApp(
-        title: 'Meta Bio',
-        theme: ThemeData(
-          colorScheme: darkTheme.colorScheme,
-          useMaterial3: true,
-          fontFamily: 'Nunito',
-        ),
-        home: const SplashScreen(),
+    return MaterialApp(
+      title: 'Meta Bio',
+      theme: ThemeData(
+        colorScheme: darkTheme.colorScheme,
+        useMaterial3: true,
+        fontFamily: 'Nunito',
       ),
+      home: const SplashScreen(),
     );
   }
 }

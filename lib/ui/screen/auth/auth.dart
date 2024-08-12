@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/ui/component/loading_view.dart';
 import 'package:meta_bio/ui/screen/auth/bloc/auth_bloc.dart';
@@ -12,28 +13,32 @@ class AuthScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if(state.loginRequestState is RequestStateSuccess) {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const DashboardScreen()),
-              (route) => false,
+      body: BlocProvider(
+        create: (context) => AuthBloc(GetIt.I.get()),
+        child: BlocConsumer<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state.loginRequestState is RequestStateSuccess) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const DashboardScreen()),
+                (route) => false,
+              );
+            } else if (state.loginRequestState is RequestStateError) {}
+          },
+          builder: (context, state) {
+            return Stack(
+              children: [
+                _buildBackgroundContainer(),
+                _buildBackground(context),
+                _buildContent(context, state),
+                state.loginRequestState is RequestStateLoading
+                    ? loadingView(context)
+                    : const SizedBox.shrink(),
+              ],
             );
-          } else if(state.loginRequestState is RequestStateError) {
-
-          }
-        },
-        builder: (context, state) {
-          return Stack(
-            children: [
-              _buildBackgroundContainer(),
-              _buildBackground(context),
-              _buildContent(context, state),
-              state.loginRequestState is RequestStateLoading ? loadingView(context) : const SizedBox.shrink(),
-            ],
-          );
-        },
+          },
+        ),
       ),
     );
   }
@@ -132,7 +137,9 @@ class AuthScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
         onChanged: (value) {
-          context.read<AuthBloc>().add(AuthEvent.phoneNumberChanged(newPhoneNumber: value));
+          context
+              .read<AuthBloc>()
+              .add(AuthEvent.phoneNumberChanged(newPhoneNumber: value));
         },
         decoration: const InputDecoration(
           labelText: 'Phone Number',
@@ -150,7 +157,9 @@ class AuthScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
         onChanged: (value) {
-          context.read<AuthBloc>().add(AuthEvent.passwordChanged(newPassword: value));
+          context
+              .read<AuthBloc>()
+              .add(AuthEvent.passwordChanged(newPassword: value));
         },
         obscureText: !state.isPasswordVisible,
         decoration: InputDecoration(
@@ -160,9 +169,12 @@ class AuthScreen extends StatelessWidget {
           ),
           prefixIcon: const Icon(Icons.lock),
           suffixIcon: IconButton(
-            icon: Icon(state.isPasswordVisible ? Icons.visibility_off : Icons.visibility),
+            icon: Icon(state.isPasswordVisible
+                ? Icons.visibility_off
+                : Icons.visibility),
             onPressed: () {
-              context.read<AuthBloc>().add(AuthEvent.toggledPasswordVisibility(isPasswordVisible: !state.isPasswordVisible));
+              context.read<AuthBloc>().add(AuthEvent.toggledPasswordVisibility(
+                  isPasswordVisible: !state.isPasswordVisible));
             },
           ),
         ),
@@ -195,4 +207,3 @@ class AuthScreen extends StatelessWidget {
     );
   }
 }
-

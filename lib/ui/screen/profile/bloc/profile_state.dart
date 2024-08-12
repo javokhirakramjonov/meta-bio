@@ -11,6 +11,5 @@ class ProfileState with _$ProfileState {
   const ProfileState._();
 
   bool get isLoading =>
-      profile == null ||
-      updateProfileRequestState == const RequestState.loading();
+      profile == null || updateProfileRequestState is RequestStateLoading;
 }

@@ -15,4 +15,6 @@ class UpdatePasswordEvent with _$UpdatePasswordEvent {
 
   const factory UpdatePasswordEvent.toggleNewPasswordVisibility(
       bool newVisibility) = ToggleNewPasswordVisibility;
+
+  const factory UpdatePasswordEvent.validateOldPassword() = ValidateOldPassword;
 }

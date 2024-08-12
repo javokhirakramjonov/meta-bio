@@ -57,7 +57,9 @@ class AuthRepository {
     final response = await _dio.get('/api/users/profile');
     var profile = Profile.fromJson(response.data['data']);
 
-    var avatarFile = await downloadImage(profile.avatar, profile.avatar);
+    final avatarFileName = "avatar.${profile.avatar.split('.').last}";
+
+    var avatarFile = await downloadImage(profile.avatar, avatarFileName);
 
     profile = profile.copyWith(avatar: avatarFile.path);
 
@@ -91,5 +93,33 @@ class AuthRepository {
     await dio.download(url, filePath);
 
     return File(filePath);
+  }
+
+  Future<RequestState<void>> updatePassword(String newPassword) async {
+    try {
+      final profileJson = _sharedPreferences.getString('profile');
+      final profile = Profile.fromJson(jsonDecode(profileJson!));
+
+      final oldPassword = await _secureStorage.read(key: 'password');
+
+      final response = await _dio.put(
+        '/api/users/change-password',
+        data: {
+          'phoneNumber': profile.phoneNumber,
+          'oldPassword': oldPassword,
+          'newPassword': newPassword,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        await _secureStorage.write(key: 'password', value: newPassword);
+
+        return const RequestState.success();
+      } else {
+        return const RequestState.error('Failed to update password');
+      }
+    } catch (e) {
+      return RequestState.error(e.toString());
+    }
   }
 }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:meta_bio/ui/component/loading_view.dart';
 import 'package:meta_bio/ui/screen/profile/bloc/profile_bloc.dart';
 import 'package:meta_bio/ui/screen/update_password/update_password.dart';
@@ -22,27 +23,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF171717),
-      appBar: AppBar(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(16),
-          ),
-        ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        elevation: 0,
-        title: const Text(
-          'Profile',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: BlocConsumer<ProfileBloc, ProfileState>(
+    return BlocProvider(
+      create: (context) => ProfileBloc(GetIt.I.get(), GetIt.I.get())
+        ..add(const ProfileEvent.started()),
+      child: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
           setState(() {
             firstNameController.text = state.profile?.firstName ?? "";
@@ -50,20 +34,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
           });
         },
         builder: (context, state) {
-          return Stack(children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  _buildProfileCard(context, state.profile?.avatar),
-                  const SizedBox(height: 16),
-                  _buildChangePasswordButton(context),
-                ],
+          return Scaffold(
+            backgroundColor: const Color(0xFF171717),
+            appBar: AppBar(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(16),
+                ),
               ),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              elevation: 0,
+              title: const Text(
+                'Profile',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              centerTitle: true,
             ),
-            state.isLoading ? loadingView(context) : const SizedBox.shrink()
-          ]);
+            body: Stack(children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    _buildProfileCard(context, state.profile?.avatar),
+                    const SizedBox(height: 16),
+                    _buildChangePasswordButton(context),
+                  ],
+                ),
+              ),
+              state.isLoading ? loadingView(context) : const SizedBox.shrink()
+            ]),
+          );
         },
       ),
     );
@@ -234,11 +239,5 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
-  }
-
-  @override
-  void initState() {
-    BlocProvider.of<ProfileBloc>(context).add(const ProfileEvent.started());
-    super.initState();
   }
 }

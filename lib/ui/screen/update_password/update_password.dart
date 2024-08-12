@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
+import 'package:meta_bio/domain/request_state.dart';
+import 'package:meta_bio/ui/component/loading_view.dart';
 import 'package:meta_bio/ui/screen/update_password/bloc/update_password_bloc.dart';
 
 class UpdatePasswordScreen extends StatefulWidget {
@@ -20,28 +23,59 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(16),
+    return BlocProvider(
+      create: (context) => UpdatePasswordBloc(GetIt.I.get(), GetIt.I.get()),
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(16),
+            ),
           ),
+          title: const Text('Update Password'),
         ),
-        title: const Text('Update Password'),
-      ),
-      body: BlocConsumer<UpdatePasswordBloc, UpdatePasswordState>(
-        listener: (context, state) {},
-        builder: (context, state) {
-          return PageView(
-            controller: _pageController,
-            physics: const NeverScrollableScrollPhysics(),
-            children: [
-              _buildOldPasswordPage(context, state),
-              _buildNewPasswordPage(context, state),
-            ],
-          );
-        },
+        body: BlocConsumer<UpdatePasswordBloc, UpdatePasswordState>(
+          listener: (context, state) {
+            if (state.isOldPasswordValid && _pageController.page == 0) {
+              _pageController.nextPage(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+              );
+            }
+
+            if (state.updatePasswordRequestState is RequestStateSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Password updated successfully'),
+                ),
+              );
+
+              Navigator.pop(context);
+            } else if (state.updatePasswordRequestState is RequestStateError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Failed to update password'),
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            return Stack(children: [
+              PageView(
+                controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  _buildOldPasswordPage(context, state),
+                  _buildNewPasswordPage(context, state),
+                ],
+              ),
+              state.updatePasswordRequestState is RequestStateLoading
+                  ? loadingView(context)
+                  : const SizedBox.shrink(),
+            ]);
+          },
+        ),
       ),
     );
   }
@@ -79,6 +113,15 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                 if (value == null || value.isEmpty) {
                   return 'Old Password cannot be empty';
                 }
+
+                context
+                    .read<UpdatePasswordBloc>()
+                    .add(const UpdatePasswordEvent.validateOldPassword());
+
+                if (!state.isOldPasswordValid) {
+                  return 'Incorrect old password';
+                }
+
                 return null;
               },
               onChanged: (value) {
@@ -97,13 +140,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                     ),
                   ),
                   onPressed: () {
-                    if (_formKeyOldPassword.currentState!.validate()) {
-                      // Handle old password verification logic here
-                      _pageController.nextPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                    }
+                    _formKeyOldPassword.currentState!.validate();
                   },
                   child: const Padding(
                     padding: EdgeInsets.all(16.0),
@@ -184,7 +221,12 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
                   ),
                   onPressed: () {
                     if (_formKeyNewPassword.currentState!.validate()) {
-                      // Handle password update logic here
+                      context.read<UpdatePasswordBloc>().add(
+                          UpdatePasswordEvent.newPasswordChanged(
+                              _newPasswordController.text));
+                      context
+                          .read<UpdatePasswordBloc>()
+                          .add(const UpdatePassword());
                     }
                   },
                   child: const Padding(
