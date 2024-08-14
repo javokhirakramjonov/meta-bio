@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/ui/component/loading_view.dart';
 import 'package:meta_bio/ui/screen/auth/bloc/auth_bloc.dart';
+import 'package:meta_bio/ui/screen/dashboard/dashboard.dart';
 import 'package:meta_bio/ui/theme/my_theme.dart';
 
 class AuthScreen extends StatelessWidget {
@@ -11,31 +13,39 @@ class AuthScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          if(state.loginRequestState is RequestStateSuccess) {
-            // Navigate to the next screen
-          } else if(state.loginRequestState is RequestStateError) {
-
-          }
-        },
-        builder: (context, state) {
-          return Stack(
-            children: [
-              _buildBackgroundContainer(),
-              _buildBackground(context),
-              _buildContent(context, state),
-              state.loginRequestState is RequestStateLoading ? loadingView(context) : const SizedBox.shrink(),
-            ],
-          );
-        },
+      body: BlocProvider(
+        create: (context) => AuthBloc(GetIt.I.get()),
+        child: BlocConsumer<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state.loginRequestState is RequestStateSuccess) {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const DashboardScreen()),
+                (route) => false,
+              );
+            } else if (state.loginRequestState is RequestStateError) {}
+          },
+          builder: (context, state) {
+            return Stack(
+              children: [
+                _buildBackgroundContainer(),
+                _buildBackground(context),
+                _buildContent(context, state),
+                state.loginRequestState is RequestStateLoading
+                    ? loadingView(context)
+                    : const SizedBox.shrink(),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
 
   Widget _buildBackgroundContainer() {
     return Container(
-      color: const Color(0xFFF7FFF7),
+      color: const Color(0xFF171717),
       width: double.infinity,
       height: double.infinity,
     );
@@ -90,6 +100,7 @@ class AuthScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Card(
+        color: const Color(0xFF0D0D0D),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -126,10 +137,12 @@ class AuthScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
         onChanged: (value) {
-          context.read<AuthBloc>().add(AuthEvent.phoneNumberChanged(newPhoneNumber: value));
+          context
+              .read<AuthBloc>()
+              .add(AuthEvent.phoneNumberChanged(newPhoneNumber: value));
         },
         decoration: const InputDecoration(
-          hintText: 'Phone Number',
+          labelText: 'Phone Number',
           border: OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
@@ -144,19 +157,24 @@ class AuthScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
         onChanged: (value) {
-          context.read<AuthBloc>().add(AuthEvent.passwordChanged(newPassword: value));
+          context
+              .read<AuthBloc>()
+              .add(AuthEvent.passwordChanged(newPassword: value));
         },
         obscureText: !state.isPasswordVisible,
         decoration: InputDecoration(
-          hintText: 'Password',
+          labelText: 'Password',
           border: const OutlineInputBorder(
             borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
           prefixIcon: const Icon(Icons.lock),
           suffixIcon: IconButton(
-            icon: Icon(state.isPasswordVisible ? Icons.visibility_off : Icons.visibility),
+            icon: Icon(state.isPasswordVisible
+                ? Icons.visibility_off
+                : Icons.visibility),
             onPressed: () {
-              context.read<AuthBloc>().add(AuthEvent.toggledPasswordVisibility(isPasswordVisible: !state.isPasswordVisible));
+              context.read<AuthBloc>().add(AuthEvent.toggledPasswordVisibility(
+                  isPasswordVisible: !state.isPasswordVisible));
             },
           ),
         ),
@@ -189,4 +207,3 @@ class AuthScreen extends StatelessWidget {
     );
   }
 }
-
