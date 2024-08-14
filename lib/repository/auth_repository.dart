@@ -40,14 +40,9 @@ class AuthRepository {
           key: 'token', value: response.data['accessToken']);
       await _secureStorage.write(key: 'password', value: password);
 
-      _loadProfile();
+      await _loadProfile();
 
-      if (isLoggedIn) {
-        return const RequestState.success();
-      } else {
-        return const RequestState.error(
-            'Phone number or password is incorrect');
-      }
+      return const RequestState.success();
     } catch (e) {
       return RequestState.error(e.toString());
     }
