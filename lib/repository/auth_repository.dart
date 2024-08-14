@@ -53,17 +53,22 @@ class AuthRepository {
     }
   }
 
-  Future<void> _loadProfile() async {
+  Future<String> _loadProfile() async {
     final response = await _dio.get('/api/users/profile');
     var profile = Profile.fromJson(response.data['data']);
 
-    final avatarFileName = "avatar.${profile.avatar.split('.').last}";
+    DateTime now = DateTime.now();
+
+    final avatarFileName =
+        "${now.toString()}.${profile.avatar.split('.').last}";
 
     var avatarFile = await downloadImage(profile.avatar, avatarFileName);
 
     profile = profile.copyWith(avatar: avatarFile.path);
 
     await _sharedPreferences.setString('profile', jsonEncode(profile));
+
+    return avatarFile.path;
   }
 
   Future<RequestState<void>> updateProfile(Profile profile) async {
@@ -117,6 +122,28 @@ class AuthRepository {
         return const RequestState.success();
       } else {
         return const RequestState.error('Failed to update password');
+      }
+    } catch (e) {
+      return RequestState.error(e.toString());
+    }
+  }
+
+  Future<RequestState<String>> updateAvatar(String avatarPath) async {
+    try {
+      final response = await _dio.put(
+        '/api/users/upload-avatar',
+        data: FormData.fromMap({
+          "avatarFile": await MultipartFile.fromFile(avatarPath,
+              filename: avatarPath.split('/').last),
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final avatarPath = await _loadProfile();
+
+        return RequestState.success(data: avatarPath);
+      } else {
+        return const RequestState.error('Failed to update avatar');
       }
     } catch (e) {
       return RequestState.error(e.toString());

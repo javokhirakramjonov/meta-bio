@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:meta_bio/domain/profile.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/repository/auth_repository.dart';
@@ -14,6 +15,7 @@ part 'profile_state.dart';
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final AuthRepository _authRepository;
   final SharedPreferences _sharedPreferences;
+  final ImagePicker _picker = ImagePicker();
 
   ProfileBloc(this._authRepository, this._sharedPreferences)
       : super(const ProfileState.initial()) {
@@ -21,6 +23,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     on<FirstNameChanged>(_firstNameChanged);
     on<LastNameChanged>(_lastNameChanged);
     on<UpdateProfile>(_updateProfile);
+    on<PickAvatar>(_pickAvatar);
     on<Logout>(_logout);
   }
 
@@ -55,6 +58,19 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     final response = await _authRepository.updateProfile(state.profile!);
 
     emit(state.copyWith(updateProfileRequestState: response));
+  }
+
+  void _pickAvatar(PickAvatar event, Emitter<ProfileState> emit) async {
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (image == null) return;
+
+    emit(
+        state.copyWith(updateAvatarRequestState: const RequestState.loading()));
+
+    final response = await _authRepository.updateAvatar(image.path);
+
+    emit(state.copyWith(updateAvatarRequestState: response));
   }
 
   void _logout(Logout event, Emitter<ProfileState> emit) async {

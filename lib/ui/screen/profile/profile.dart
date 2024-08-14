@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,6 +59,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
               (route) => false,
             );
           }
+
+          final updateAvatarRequestState = state.updateAvatarRequestState;
+
+          if (updateAvatarRequestState is RequestStateSuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Avatar updated successfully'),
+              ),
+            );
+          } else if (updateAvatarRequestState is RequestStateError<String>) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(updateAvatarRequestState.message),
+              ),
+            );
+          }
         },
         builder: (context, state) {
           return Scaffold(
@@ -86,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                    _buildProfileCard(context, state.profile?.avatar),
+                    _buildProfileCard(context, state),
                     const SizedBox(height: 16),
                     _buildChangePasswordButton(context),
                     const SizedBox(height: 16),
@@ -102,7 +119,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileCard(BuildContext context, String? avatar) {
+  Widget _buildProfileCard(BuildContext context, ProfileState state) {
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -115,7 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildProfileImage(context, avatar),
+              _buildProfileImage(context, state),
               const SizedBox(height: 56),
               _buildFirstNameField(context),
               const SizedBox(height: 16),
@@ -128,16 +145,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileImage(BuildContext context, String? avatar) {
+  Widget _buildProfileImage(BuildContext context, ProfileState state) {
+    final avatar = state.profile?.avatar;
+    final updateAvatarState = state.updateAvatarRequestState;
+
     return Center(
       child: Stack(
         children: [
-          CircleAvatar(
-            radius: 64,
-            backgroundImage: avatar == null
-                ? const AssetImage('assets/images/avatar.png')
-                : FileImage(File(avatar)),
-          ),
+          Stack(children: [
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+              child: Container(
+                width: 128,
+                height: 128,
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withOpacity(0.3) //Colors.black.withOpacity(0.3),
+                    ),
+              ),
+            ),
+            CircleAvatar(
+              radius: 64,
+              backgroundColor: Colors.transparent,
+              backgroundImage: updateAvatarState is RequestStateSuccess<String>
+                  ? FileImage(File(updateAvatarState.data!))
+                  : avatar == null
+                      ? const AssetImage('assets/images/avatar.png')
+                      : FileImage(File(avatar)),
+            ),
+            SizedBox(
+              width: 128,
+              height: 128,
+              child: updateAvatarState is RequestStateLoading
+                  ? const CircularProgressIndicator()
+                  : const SizedBox.shrink(),
+            )
+          ]),
           Positioned(
             bottom: 0,
             right: 0,
@@ -150,7 +196,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
               onTap: () {
-                // TODO: Implement photo change functionality
+                context
+                    .read<ProfileBloc>()
+                    .add(const ProfileEvent.pickAvatar());
               },
             ),
           ),
