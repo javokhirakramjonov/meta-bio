@@ -11,6 +11,8 @@ class ProfileEvent with _$ProfileEvent {
 
   const factory ProfileEvent.updateProfile() = UpdateProfile;
 
+  const factory ProfileEvent.profileUpdated(Profile profile) = ProfileUpdated;
+
   const factory ProfileEvent.pickAvatar() = PickAvatar;
 
   const factory ProfileEvent.logout() = Logout;
