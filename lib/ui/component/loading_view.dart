@@ -1,6 +1,6 @@
+import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:blur/blur.dart';
 
 Widget loadingView(BuildContext context) {
   return Stack(
@@ -9,8 +9,8 @@ Widget loadingView(BuildContext context) {
           child: Blur(
             blur: 3.0,
             colorOpacity: 0.1,
-            blurColor: Theme.of(context).primaryColor,
-            child: Container(
+          blurColor: Theme.of(context).colorScheme.primary,
+          child: Container(
               color: Colors.black.withOpacity(0.2),
             ),
           ),
@@ -19,8 +19,8 @@ Widget loadingView(BuildContext context) {
         // Centered Circular Loading Indicator
         Center(
           child: SpinKitCircle(
-            color: Theme.of(context).primaryColor,
-            size: 80.0,
+          color: Theme.of(context).colorScheme.primary,
+          size: 80.0,
           ),
         ),
       ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meta_bio/ui/screen/modules/modules.dart';
 import 'package:meta_bio/ui/screen/profile/profile.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -12,7 +13,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    Text('Exams Screen'),
+    ModulesScreen(),
     Text('Leaderboard Screen'),
     ProfileScreen(),
   ];
@@ -26,15 +27,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _widgetOptions,
       ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: const Color(0xFF0D0D0D),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.book),
-            label: 'Exams',
+            label: 'Modules',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.leaderboard),

@@ -25,56 +25,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
+  void dispose() {
+    firstNameController.dispose();
+    lastNameController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => ProfileBloc(GetIt.I.get(), GetIt.I.get())
         ..add(const ProfileEvent.started()),
       child: BlocConsumer<ProfileBloc, ProfileState>(
         listener: (context, state) {
-          setState(() {
-            firstNameController.text = state.profile?.firstName ?? "";
-            lastNameController.text = state.profile?.lastName ?? "";
-          });
-
-          final updateProfileRequestState = state.updateProfileRequestState;
-
-          if (updateProfileRequestState is RequestStateSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Profile updated successfully'),
-              ),
-            );
-          } else if (updateProfileRequestState is RequestStateError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(updateProfileRequestState.message),
-              ),
-            );
-          }
-
-          if (state.shouldLogOut) {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const SplashScreen()),
-              (route) => false,
-            );
-          }
-
-          final updateAvatarRequestState = state.updateAvatarRequestState;
-
-          if (updateAvatarRequestState is RequestStateSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Avatar updated successfully'),
-              ),
-            );
-          } else if (updateAvatarRequestState is RequestStateError<String>) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(updateAvatarRequestState.message),
-              ),
-            );
-          }
+          _updateTextControllers(state);
+          _handleProfileUpdateState(context, state);
+          _handleLogout(context, state);
+          _handleAvatarUpdateState(context, state);
         },
         builder: (context, state) {
           return Scaffold(
@@ -119,6 +86,57 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  void _updateTextControllers(ProfileState state) {
+    firstNameController.text = state.profile?.firstName ?? "";
+    lastNameController.text = state.profile?.lastName ?? "";
+  }
+
+  void _handleProfileUpdateState(BuildContext context, ProfileState state) {
+    final updateProfileRequestState = state.updateProfileRequestState;
+
+    if (updateProfileRequestState is RequestStateSuccess) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Profile updated successfully'),
+        ),
+      );
+    } else if (updateProfileRequestState is RequestStateError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(updateProfileRequestState.message),
+        ),
+      );
+    }
+  }
+
+  void _handleLogout(BuildContext context, ProfileState state) {
+    if (state.shouldLogOut) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const SplashScreen()),
+        (route) => false,
+      );
+    }
+  }
+
+  void _handleAvatarUpdateState(BuildContext context, ProfileState state) {
+    final updateAvatarRequestState = state.updateAvatarRequestState;
+
+    if (updateAvatarRequestState is RequestStateSuccess) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Avatar updated successfully'),
+        ),
+      );
+    } else if (updateAvatarRequestState is RequestStateError<String>) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(updateAvatarRequestState.message),
+        ),
+      );
+    }
+  }
+
   Widget _buildProfileCard(BuildContext context, ProfileState state) {
     return Card(
       shape: RoundedRectangleBorder(
@@ -146,40 +164,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProfileImage(BuildContext context, ProfileState state) {
-    final avatar = state.profile?.avatar;
-    final updateAvatarState = state.updateAvatarRequestState;
+    var avatar = state.profile?.avatar;
 
     return Center(
       child: Stack(
         children: [
           Stack(children: [
-            BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+            ClipOval(
               child: Container(
-                width: 128,
-                height: 128,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withOpacity(0.3) //Colors.black.withOpacity(0.3),
+                  width: 140,
+                  height: 140,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .primary
+                          .withOpacity(0.3)),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 5.0, sigmaY: 5.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          backgroundImage: avatar == null
+                              ? const AssetImage('assets/images/avatar.png')
+                              : FileImage(File(avatar))),
                     ),
-              ),
-            ),
-            CircleAvatar(
-              radius: 64,
-              backgroundColor: Colors.transparent,
-              backgroundImage: updateAvatarState is RequestStateSuccess<String>
-                  ? FileImage(File(updateAvatarState.data!))
-                  : avatar == null
-                      ? const AssetImage('assets/images/avatar.png')
-                      : FileImage(File(avatar)),
+                  )),
             ),
             SizedBox(
-              width: 128,
-              height: 128,
-              child: updateAvatarState is RequestStateLoading
+              width: 140,
+              height: 140,
+              child: state.updateAvatarRequestState is RequestStateLoading
                   ? const CircularProgressIndicator()
                   : const SizedBox.shrink(),
             )
@@ -226,13 +242,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }
           return null;
         },
-        onFieldSubmitted: (value) {
-          if (_formKey.currentState!.validate()) {
-            context.read<ProfileBloc>().add(
-                  const ProfileEvent.updateProfile(),
-                );
-          }
-        },
         onChanged: (value) {
           if (_formKey.currentState!.validate()) {
             context.read<ProfileBloc>().add(
@@ -262,13 +271,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return 'Last name cannot be empty or blank';
           }
           return null;
-        },
-        onFieldSubmitted: (value) {
-          if (_formKey.currentState!.validate()) {
-            context.read<ProfileBloc>().add(
-                  const ProfileEvent.updateProfile(),
-                );
-          }
         },
         onChanged: (value) {
           if (_formKey.currentState!.validate()) {
