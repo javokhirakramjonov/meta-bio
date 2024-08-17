@@ -78,6 +78,9 @@ class AuthRepository {
 
       if (response.statusCode == 200) {
         await _sharedPreferences.setString('profile', jsonEncode(profile));
+
+        globalProfileObservable.value = profile;
+
         return const RequestState.success(null);
       } else {
         return const RequestState.error('Failed to update profile');

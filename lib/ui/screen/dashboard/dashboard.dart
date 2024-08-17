@@ -12,10 +12,16 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
 
-  static const List<Widget> _widgetOptions = <Widget>[
-    ModulesScreen(),
-    Text('Leaderboard Screen'),
-    ProfileScreen(),
+  static final List<Widget> _widgetOptions = [
+    Navigator(
+      onGenerateRoute: (routeSettings) {
+        return MaterialPageRoute(
+          builder: (context) => const ModulesScreen(),
+        );
+      },
+    ),
+    const Text('Leaderboard Screen'),
+    const ProfileScreen(),
   ];
 
   void _onItemTapped(int index) {

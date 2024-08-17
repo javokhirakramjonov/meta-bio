@@ -48,13 +48,15 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
   void _firstNameChanged(
       FirstNameChanged event, Emitter<ProfileState> emit) async {
     emit(state.copyWith(
-        profile: state.profile?.copyWith(firstName: event.firstName)));
+        profile: state.profile?.copyWith(firstName: event.firstName),
+        updateProfileRequestState: const RequestState.initial()));
   }
 
   void _lastNameChanged(
       LastNameChanged event, Emitter<ProfileState> emit) async {
     emit(state.copyWith(
-        profile: state.profile?.copyWith(lastName: event.lastName)));
+        profile: state.profile?.copyWith(lastName: event.lastName),
+        updateProfileRequestState: const RequestState.initial()));
   }
 
   void _updateProfile(UpdateProfile event, Emitter<ProfileState> emit) async {
@@ -77,6 +79,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
     final response = await _authRepository.updateAvatar(image.path);
 
     emit(state.copyWith(updateAvatarRequestState: response));
+    emit(
+        state.copyWith(updateAvatarRequestState: const RequestState.initial()));
   }
 
   void _logout(Logout event, Emitter<ProfileState> emit) async {

@@ -249,6 +249,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 );
           }
         },
+        onFieldSubmitted: (value) {
+          if (_formKey.currentState!.validate()) {
+            context.read<ProfileBloc>().add(const ProfileEvent.updateProfile());
+          }
+        },
       ),
     );
   }
@@ -277,6 +282,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             context.read<ProfileBloc>().add(
                   ProfileEvent.lastNameChanged(value),
                 );
+          }
+        },
+        onFieldSubmitted: (value) {
+          if (_formKey.currentState!.validate()) {
+            context.read<ProfileBloc>().add(const ProfileEvent.updateProfile());
           }
         },
       ),
