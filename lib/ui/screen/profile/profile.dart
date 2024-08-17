@@ -65,17 +65,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
               centerTitle: true,
             ),
             body: Stack(children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    _buildProfileCard(context, state),
-                    const SizedBox(height: 16),
-                    _buildChangePasswordButton(context),
-                    const SizedBox(height: 16),
-                    _buildLogOutButton(context),
-                  ],
+              RefreshIndicator(
+                onRefresh: () async {
+                  context
+                      .read<ProfileBloc>()
+                      .add(const ProfileEvent.loadProfile());
+                },
+                child: SingleChildScrollView(
+                  clipBehavior: Clip.none,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        _buildProfileCard(context, state),
+                        const SizedBox(height: 16),
+                        _buildChangePasswordButton(context),
+                        const SizedBox(height: 16),
+                        _buildLogOutButton(context),
+                      ],
+                    ),
+                  ),
                 ),
               ),
               state.isLoading ? loadingView(context) : const SizedBox.shrink()
@@ -103,7 +114,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } else if (updateProfileRequestState is RequestStateError) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(updateProfileRequestState.message),
+          content: Text(updateProfileRequestState.errorMessage),
         ),
       );
     }
@@ -131,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } else if (updateAvatarRequestState is RequestStateError<String>) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(updateAvatarRequestState.message),
+          content: Text(updateAvatarRequestState.errorMessage),
         ),
       );
     }

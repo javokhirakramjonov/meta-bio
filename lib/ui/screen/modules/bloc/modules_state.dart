@@ -4,7 +4,7 @@ part of 'modules_bloc.dart';
 class ModulesState with _$ModulesState {
   const factory ModulesState.initial({
     Profile? profile,
-    @Default(RequestState.initial())
+    @Default(RequestStateInitial())
     RequestState<List<Module>> modulesRequestState,
   }) = _Initial;
 }

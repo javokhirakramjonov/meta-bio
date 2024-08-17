@@ -35,11 +35,17 @@ class _ModulesScreenState extends State<ModulesScreen> {
               children: [
                 _buildHeader(context, state),
                 Expanded(
+                    child: RefreshIndicator(
+                  onRefresh: () async {
+                    context
+                        .read<ModulesBloc>()
+                        .add(const ModulesEvent.loadModules());
+                  },
                   child:
                       modulesRequestState is RequestStateSuccess<List<Module>>
                           ? _buildModulesList(modulesRequestState)
                           : const ModulesShimmerList(),
-                ),
+                )),
               ],
             ),
           );
@@ -116,10 +122,7 @@ class _ModulesScreenState extends State<ModulesScreen> {
       itemBuilder: (context, index) {
         return Padding(
           padding: const EdgeInsets.only(bottom: 16),
-          child: ModuleItem(
-            title: modulesRequestState.data[index].name,
-            examCount: 30,
-          ),
+          child: ModuleItem(module: modulesRequestState.data[index]),
         );
       },
     );

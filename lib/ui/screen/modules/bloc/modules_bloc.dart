@@ -23,12 +23,13 @@ class ModulesBloc extends Bloc<ModulesEvent, ModulesState>
       : super(const ModulesState.initial()) {
     on<Started>(_started);
     on<ProfileUpdated>(_profileUpdated);
+    on<LoadModules>(_loadModules);
   }
 
   void _started(Started event, Emitter<ModulesState> emit) async {
     globalProfileObservable.addListener(this);
+    add(const ModulesEvent.loadModules());
     _loadProfile(emit);
-    await _loadModules(emit);
   }
 
   void _profileUpdated(ProfileUpdated event, Emitter<ModulesState> emit) async {
@@ -47,8 +48,11 @@ class ModulesBloc extends Bloc<ModulesEvent, ModulesState>
     emit(state.copyWith(profile: profile));
   }
 
-  Future<void> _loadModules(Emitter<ModulesState> emit) async {
+  Future<void> _loadModules(
+      LoadModules event, Emitter<ModulesState> emit) async {
     emit(state.copyWith(modulesRequestState: const RequestState.loading()));
+
+    await Future.delayed(const Duration(seconds: 3));
 
     final modulesRequestState = await _moduleRepository.getModules();
 

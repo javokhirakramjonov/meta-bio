@@ -41,7 +41,7 @@ class AuthRepository {
           key: 'token', value: response.data['accessToken']);
       await _secureStorage.write(key: 'password', value: password);
 
-      await _loadProfile();
+      await loadProfile();
 
       return const RequestState.success(null);
     } catch (e) {
@@ -49,24 +49,28 @@ class AuthRepository {
     }
   }
 
-  Future<Profile> _loadProfile() async {
-    final response = await _dio.get('/api/users/profile');
-    var profile = Profile.fromJson(response.data['data']);
+  Future<RequestState<Profile>> loadProfile() async {
+    try {
+      final response = await _dio.get('/api/users/profile');
+      var profile = Profile.fromJson(response.data['data']);
 
-    DateTime now = DateTime.now();
+      DateTime now = DateTime.now();
 
-    final avatarFileName =
-        "${now.toString()}.${profile.avatar.split('.').last}";
+      final avatarFileName =
+          "${now.toString()}.${profile.avatar.split('.').last}";
 
-    var avatarFile = await _downloadImage(profile.avatar, avatarFileName);
+      var avatarFile = await _downloadImage(profile.avatar, avatarFileName);
 
-    profile = profile.copyWith(avatar: avatarFile.path);
+      profile = profile.copyWith(avatar: avatarFile.path);
 
-    await _sharedPreferences.setString('profile', jsonEncode(profile));
+      await _sharedPreferences.setString('profile', jsonEncode(profile));
 
-    globalProfileObservable.value = profile;
+      globalProfileObservable.value = profile;
 
-    return profile;
+      return RequestStateSuccess(profile);
+    } catch (e) {
+      return RequestState.error(e.toString());
+    }
   }
 
   Future<RequestState<void>> updateProfile(Profile profile) async {
@@ -140,12 +144,18 @@ class AuthRepository {
       );
 
       if (response.statusCode == 200) {
-        final profile = await _loadProfile();
+        final profile = await loadProfile();
 
-        return RequestState.success(profile.avatar);
-      } else {
-        return const RequestState.error('Failed to update avatar');
+        if (profile is RequestStateSuccess<Profile>) {
+          return RequestStateError(profile.data.avatar);
+        }
+
+        if (profile is RequestStateError<Profile>) {
+          return RequestStateError(profile.errorMessage);
+        }
       }
+
+      return const RequestState.error('Failed to update avatar');
     } catch (e) {
       logger.e(e);
       return RequestState.error(e.toString());
