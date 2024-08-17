@@ -29,6 +29,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
     on<ProfileUpdated>(_profileUpdated);
     on<PickAvatar>(_pickAvatar);
     on<Logout>(_logout);
+    on<LoadProfile>(_loadProfile);
   }
 
   void _started(Started event, Emitter<ProfileState> emit) async {
@@ -98,5 +99,19 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
 
   void _profileUpdated(ProfileUpdated event, Emitter<ProfileState> emit) async {
     emit(state.copyWith(profile: event.profile));
+  }
+
+  void _loadProfile(LoadProfile event, Emitter<ProfileState> emit) async {
+    emit(state.copyWith(loadProfileRequestState: const RequestState.loading()));
+
+    final newProfile = await _authRepository.loadProfile();
+
+    emit(state.copyWith(loadProfileRequestState: newProfile));
+    emit(
+        state.copyWith(updateAvatarRequestState: const RequestState.initial()));
+
+    if (newProfile is RequestStateSuccess<Profile>) {
+      emit(state.copyWith(profile: newProfile.data));
+    }
   }
 }

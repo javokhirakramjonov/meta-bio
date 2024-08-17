@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:meta_bio/domain/module.dart';
+import 'package:meta_bio/ui/screen/exams/exams.dart';
 
 class ModuleItem extends StatelessWidget {
-  final String title;
-  final int examCount;
+  final Module module;
 
-  const ModuleItem({super.key, required this.title, required this.examCount});
+  const ModuleItem({super.key, required this.module});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +15,13 @@ class ModuleItem extends StatelessWidget {
       ),
       color: const Color(0xFF0D0D0D),
       child: ListTile(
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ExamsScreen(moduleId: module.id)),
+          );
+        },
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -24,7 +31,7 @@ class ModuleItem extends StatelessWidget {
           backgroundImage: AssetImage('assets/images/dna.png'),
         ),
         title: Text(
-          title,
+          module.name,
           style: const TextStyle(
             color: Color(0xFFC5CCDB),
             fontSize: 18,
@@ -43,7 +50,7 @@ class ModuleItem extends StatelessWidget {
                 ),
               ),
               TextSpan(
-                text: '$examCount',
+                text: "30", //TODO: module.examCount.toString(),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,

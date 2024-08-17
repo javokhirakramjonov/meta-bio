@@ -16,4 +16,6 @@ class ProfileEvent with _$ProfileEvent {
   const factory ProfileEvent.pickAvatar() = PickAvatar;
 
   const factory ProfileEvent.logout() = Logout;
+
+  const factory ProfileEvent.loadProfile() = LoadProfile;
 }
