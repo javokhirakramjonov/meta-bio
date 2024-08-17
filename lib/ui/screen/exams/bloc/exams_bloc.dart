@@ -18,7 +18,7 @@ class ExamsBloc extends Bloc<ExamsEvent, ExamsState> {
   void _started(Started event, Emitter<ExamsState> emit) async {
     emit(state.copyWith(examsRequestState: const RequestState.loading()));
 
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 1));
 
     final examsRequestState = await _examRepository.getExams(event.moduleId);
 

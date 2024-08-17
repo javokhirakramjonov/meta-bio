@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:meta_bio/repository/auth_repository.dart';
 import 'package:meta_bio/repository/exam_repository.dart';
 import 'package:meta_bio/repository/module_repository.dart';
+import 'package:meta_bio/repository/quiz_repository.dart';
 import 'package:meta_bio/service/api_service.dart';
 import 'package:meta_bio/ui/screen/splash/splash.dart';
 import 'package:meta_bio/ui/theme/my_theme.dart';
@@ -42,4 +43,5 @@ Future<void> justGetIt() async {
       AuthRepository(GetIt.I.get(), GetIt.I.get(), GetIt.I.get()));
   GetIt.I.registerSingleton<ModuleRepository>(ModuleRepository(GetIt.I.get()));
   GetIt.I.registerSingleton<ExamRepository>(ExamRepository(GetIt.I.get()));
+  GetIt.I.registerSingleton<QuizRepository>(QuizRepository(GetIt.I.get()));
 }

@@ -52,7 +52,7 @@ class ModulesBloc extends Bloc<ModulesEvent, ModulesState>
       LoadModules event, Emitter<ModulesState> emit) async {
     emit(state.copyWith(modulesRequestState: const RequestState.loading()));
 
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 1));
 
     final modulesRequestState = await _moduleRepository.getModules();
 
