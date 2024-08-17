@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:meta_bio/domain/profile.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/service/api_service.dart';
+import 'package:meta_bio/util/global.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -40,30 +41,36 @@ class AuthRepository {
           key: 'token', value: response.data['accessToken']);
       await _secureStorage.write(key: 'password', value: password);
 
-      await _loadProfile();
+      await loadProfile();
 
-      return const RequestState.success();
+      return const RequestState.success(null);
     } catch (e) {
       return RequestState.error(e.toString());
     }
   }
 
-  Future<String> _loadProfile() async {
-    final response = await _dio.get('/api/users/profile');
-    var profile = Profile.fromJson(response.data['data']);
+  Future<RequestState<Profile>> loadProfile() async {
+    try {
+      final response = await _dio.get('/api/users/profile');
+      var profile = Profile.fromJson(response.data['data']);
 
-    DateTime now = DateTime.now();
+      DateTime now = DateTime.now();
 
-    final avatarFileName =
-        "${now.toString()}.${profile.avatar.split('.').last}";
+      final avatarFileName =
+          "${now.toString()}.${profile.avatar.split('.').last}";
 
-    var avatarFile = await downloadImage(profile.avatar, avatarFileName);
+      var avatarFile = await _downloadImage(profile.avatar, avatarFileName);
 
-    profile = profile.copyWith(avatar: avatarFile.path);
+      profile = profile.copyWith(avatar: avatarFile.path);
 
-    await _sharedPreferences.setString('profile', jsonEncode(profile));
+      await _sharedPreferences.setString('profile', jsonEncode(profile));
 
-    return avatarFile.path;
+      globalProfileObservable.value = profile;
+
+      return RequestStateSuccess(profile);
+    } catch (e) {
+      return RequestState.error(e.toString());
+    }
   }
 
   Future<RequestState<void>> updateProfile(Profile profile) async {
@@ -75,7 +82,10 @@ class AuthRepository {
 
       if (response.statusCode == 200) {
         await _sharedPreferences.setString('profile', jsonEncode(profile));
-        return const RequestState.success();
+
+        globalProfileObservable.value = profile;
+
+        return const RequestState.success(null);
       } else {
         return const RequestState.error('Failed to update profile');
       }
@@ -84,7 +94,7 @@ class AuthRepository {
     }
   }
 
-  Future<File> downloadImage(String url, String fileName) async {
+  Future<File> _downloadImage(String url, String fileName) async {
     final directory = await getApplicationDocumentsDirectory();
 
     final filePath = '${directory.path}/images/$fileName';
@@ -114,7 +124,7 @@ class AuthRepository {
       if (response.statusCode == 200) {
         await _secureStorage.write(key: 'password', value: newPassword);
 
-        return const RequestState.success();
+        return const RequestState.success(null);
       } else {
         return const RequestState.error('Failed to update password');
       }
@@ -134,13 +144,20 @@ class AuthRepository {
       );
 
       if (response.statusCode == 200) {
-        final avatarPath = await _loadProfile();
+        final profile = await loadProfile();
 
-        return RequestState.success(data: avatarPath);
-      } else {
-        return const RequestState.error('Failed to update avatar');
+        if (profile is RequestStateSuccess<Profile>) {
+          return RequestStateError(profile.data.avatar);
+        }
+
+        if (profile is RequestStateError<Profile>) {
+          return RequestStateError(profile.errorMessage);
+        }
       }
+
+      return const RequestState.error('Failed to update avatar');
     } catch (e) {
+      logger.e(e);
       return RequestState.error(e.toString());
     }
   }
