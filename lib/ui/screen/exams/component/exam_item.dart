@@ -21,7 +21,7 @@ class ExamItem extends StatelessWidget {
         onTap: () {
           Navigator.of(context, rootNavigator: true).push(
             MaterialPageRoute(
-              builder: (context) => QuizScreen(examId: exam.id),
+              builder: (context) => QuizScreen(exam: exam),
             ),
           );
         },

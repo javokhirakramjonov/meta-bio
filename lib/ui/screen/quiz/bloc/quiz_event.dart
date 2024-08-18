@@ -5,14 +5,10 @@ class QuizEvent with _$QuizEvent {
   const factory QuizEvent.started() = Started;
 
   const factory QuizEvent.variantSelected({
-    required int questionIndex,
-    required Variant variant,
+    required int questionId,
+    required int variantId,
+    required QuestionType questionType,
   }) = VariantSelected;
-
-  const factory QuizEvent.variantToggled({
-    required int questionIndex,
-    required Variant variant,
-  }) = VariantToggled;
 
   const factory QuizEvent.submit() = Submit;
 }
