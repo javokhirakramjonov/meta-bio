@@ -27,7 +27,7 @@ class QuizRepository {
 
   Future<RequestState<void>> readyToStart(int examId) async {
     try {
-      await _dio.get('api/exams/$examId/start');
+      await _dio.post('/api/exams/$examId/start');
 
       return const RequestState.success(null);
     } catch (e) {
@@ -38,7 +38,7 @@ class QuizRepository {
   Future<RequestState<void>> submit(int examId, List<Answer> answers) async {
     try {
       await _dio.post(
-        'api/exams/$examId/submit',
+        '/api/exams/$examId/submit',
         data: {'answers': answers.map((e) => e.toJson()).toList()},
       );
       return const RequestState.success(null);

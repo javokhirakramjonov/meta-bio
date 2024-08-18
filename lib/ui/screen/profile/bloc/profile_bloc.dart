@@ -114,4 +114,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
       emit(state.copyWith(profile: newProfile.data));
     }
   }
+
+  @override
+  Future<void> close() async {
+    globalProfileObservable.removeListener(this);
+    super.close();
+  }
 }
