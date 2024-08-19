@@ -4,6 +4,7 @@ import 'package:meta_bio/domain/answer.dart';
 import 'package:meta_bio/domain/question.dart';
 import 'package:meta_bio/domain/question_type.dart';
 import 'package:meta_bio/domain/request_state.dart';
+import 'package:meta_bio/repository/exam_repository.dart';
 import 'package:meta_bio/repository/quiz_repository.dart';
 
 part 'quiz_bloc.freezed.dart';
@@ -12,8 +13,9 @@ part 'quiz_state.dart';
 
 class QuizBloc extends Bloc<QuizEvent, QuizState> {
   final QuizRepository _quizRepository;
+  final ExamRepository _examRepository;
 
-  QuizBloc(this._quizRepository, int examId)
+  QuizBloc(this._quizRepository, this._examRepository, int examId)
       : super(QuizState.initial(examId: examId)) {
     on<Started>(_onStarted);
     on<VariantSelected>(_onVariantSelected);
@@ -103,7 +105,7 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
     });
 
     final submitRequestState =
-        await _quizRepository.submit(state.examId, answers);
+        await _examRepository.submit(state.examId, answers);
 
     emit(state.copyWith(submitRequestState: submitRequestState));
   }
