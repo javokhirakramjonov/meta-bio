@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:meta_bio/domain/exam.dart';
+import 'package:meta_bio/ui/screen/quiz/quiz.dart';
 
 class ExamItem extends StatelessWidget {
   final Exam exam;
@@ -17,7 +18,13 @@ class ExamItem extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context, rootNavigator: true).push(
+            MaterialPageRoute(
+              builder: (context) => QuizScreen(exam: exam),
+            ),
+          );
+        },
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

@@ -33,7 +33,14 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
               bottom: Radius.circular(16),
             ),
           ),
-          title: const Text('Update Password'),
+          title: const Text(
+            'Update Password',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
         body: BlocConsumer<UpdatePasswordBloc, UpdatePasswordState>(
           listener: (context, state) {

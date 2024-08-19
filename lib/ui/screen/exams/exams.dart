@@ -74,6 +74,7 @@ class _ExamsScreenState extends State<ExamsScreen> {
 
   Widget _buildExamsList(RequestStateSuccess<List<Exam>> examsRequestState) {
     return ListView.builder(
+      clipBehavior: Clip.none,
       padding: const EdgeInsets.all(20),
       shrinkWrap: true,
       itemCount: examsRequestState.data.length,

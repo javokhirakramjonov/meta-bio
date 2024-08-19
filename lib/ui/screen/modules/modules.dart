@@ -116,6 +116,7 @@ class _ModulesScreenState extends State<ModulesScreen> {
   Widget _buildModulesList(
       RequestStateSuccess<List<Module>> modulesRequestState) {
     return ListView.builder(
+      clipBehavior: Clip.none,
       padding: const EdgeInsets.all(20),
       shrinkWrap: true,
       itemCount: modulesRequestState.data.length,
