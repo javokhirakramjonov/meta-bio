@@ -20,8 +20,8 @@ class _ExamsScreenState extends State<ExamsScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-          ExamsBloc(GetIt.I.get())..add(ExamsEvent.started(widget.moduleId)),
+      create: (context) => ExamsBloc(GetIt.I.get(), context)
+        ..add(ExamsEvent.started(widget.moduleId)),
       child: BlocConsumer<ExamsBloc, ExamsState>(
         listener: (context, state) {
           final examsRequestState = state.examsRequestState;

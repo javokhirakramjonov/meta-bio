@@ -11,11 +11,10 @@ class ProfileEvent with _$ProfileEvent {
 
   const factory ProfileEvent.updateProfile() = UpdateProfile;
 
-  const factory ProfileEvent.profileUpdated(Profile profile) = ProfileUpdated;
-
   const factory ProfileEvent.pickAvatar() = PickAvatar;
 
-  const factory ProfileEvent.logout() = Logout;
+  const factory ProfileEvent.profileLoadedFromGlobal(Profile? profile) =
+      ProfileLoadedFromGlobal;
 
-  const factory ProfileEvent.loadProfile() = LoadProfile;
+  const factory ProfileEvent.logout() = Logout;
 }

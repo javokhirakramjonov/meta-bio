@@ -1,13 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:meta_bio/domain/module.dart';
 import 'package:meta_bio/domain/request_state.dart';
-import 'package:meta_bio/service/api_service.dart';
+import 'package:meta_bio/service/dio_provider.dart';
 
 class ModuleRepository {
   late Dio _dio;
 
-  ModuleRepository(ApiService apiService) {
-    _dio = apiService.dio;
+  ModuleRepository(DioProvider dioProvider) {
+    _dio = dioProvider.dio;
   }
 
   Future<RequestState<List<Module>>> getModules() async {

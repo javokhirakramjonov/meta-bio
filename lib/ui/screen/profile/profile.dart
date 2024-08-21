@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/ui/component/loading_view.dart';
+import 'package:meta_bio/ui/component/snackbar.dart';
 import 'package:meta_bio/ui/screen/profile/bloc/profile_bloc.dart';
 import 'package:meta_bio/ui/screen/splash/splash.dart';
 import 'package:meta_bio/ui/screen/update_password/update_password.dart';
@@ -34,65 +35,58 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ProfileBloc(GetIt.I.get(), GetIt.I.get())
+      create: (context) => ProfileBloc(GetIt.I.get(), context)
         ..add(const ProfileEvent.started()),
-      child: BlocConsumer<ProfileBloc, ProfileState>(
-        listener: (context, state) {
-          _updateTextControllers(state);
-          _handleProfileUpdateState(context, state);
-          _handleLogout(context, state);
-          _handleAvatarUpdateState(context, state);
-        },
-        builder: (context, state) {
-          return Scaffold(
-            backgroundColor: const Color(0xFF171717),
-            appBar: AppBar(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(16),
-                ),
-              ),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              elevation: 0,
-              title: const Text(
-                'Profile',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              centerTitle: true,
+      child: Scaffold(
+        backgroundColor: const Color(0xFF171717),
+        appBar: AppBar(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(16),
             ),
-            body: Stack(children: [
-              RefreshIndicator(
-                onRefresh: () async {
-                  context
-                      .read<ProfileBloc>()
-                      .add(const ProfileEvent.loadProfile());
-                },
-                child: SingleChildScrollView(
-                  clipBehavior: Clip.none,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 20),
-                        _buildProfileCard(context, state),
-                        const SizedBox(height: 16),
-                        _buildChangePasswordButton(context),
-                        const SizedBox(height: 16),
-                        _buildLogOutButton(context),
-                      ],
-                    ),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          elevation: 0,
+          title: const Text(
+            'Profile',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: BlocConsumer<ProfileBloc, ProfileState>(
+          listener: (context, state) {
+            _updateTextControllers(state);
+            _handleUpdateProfileRequestState(context, state);
+            _handleLogOutRequestState(context, state);
+            _handleUpdateAvatarRequestState(context, state);
+          },
+          builder: (context, state) {
+            return Stack(children: [
+              SingleChildScrollView(
+                clipBehavior: Clip.none,
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      _buildProfileCard(context, state),
+                      const SizedBox(height: 16),
+                      _buildChangePasswordButton(context),
+                      const SizedBox(height: 16),
+                      _buildLogOutButton(context),
+                    ],
                   ),
                 ),
               ),
-              state.isLoading ? loadingView(context) : const SizedBox.shrink()
-            ]),
-          );
-        },
+              _handleLoadingState(context, state),
+            ]);
+          },
+        ),
       ),
     );
   }
@@ -102,25 +96,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     lastNameController.text = state.profile?.lastName ?? "";
   }
 
-  void _handleProfileUpdateState(BuildContext context, ProfileState state) {
+  void _handleUpdateProfileRequestState(
+      BuildContext context, ProfileState state) {
     final updateProfileRequestState = state.updateProfileRequestState;
 
     if (updateProfileRequestState is RequestStateSuccess) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Profile updated successfully'),
-        ),
-      );
-    } else if (updateProfileRequestState is RequestStateError) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(updateProfileRequestState.errorMessage),
-        ),
-      );
+      showSuccessSnackBar(context, 'Profile updated successfully');
     }
   }
 
-  void _handleLogout(BuildContext context, ProfileState state) {
+  void _handleLogOutRequestState(BuildContext context, ProfileState state) {
     if (state.shouldLogOut) {
       Navigator.pushAndRemoveUntil(
         context,
@@ -130,21 +115,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _handleAvatarUpdateState(BuildContext context, ProfileState state) {
+  void _handleUpdateAvatarRequestState(
+      BuildContext context, ProfileState state) {
     final updateAvatarRequestState = state.updateAvatarRequestState;
 
     if (updateAvatarRequestState is RequestStateSuccess) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Avatar updated successfully'),
-        ),
-      );
-    } else if (updateAvatarRequestState is RequestStateError<String>) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(updateAvatarRequestState.errorMessage),
-        ),
-      );
+      showSuccessSnackBar(context, 'Avatar updated successfully');
     }
   }
 
@@ -163,9 +139,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               _buildProfileImage(context, state),
               const SizedBox(height: 56),
-              _buildFirstNameField(context),
+              _buildFirstNameField(context, state),
               const SizedBox(height: 16),
-              _buildLastNameField(context),
+              _buildLastNameField(context, state),
               const SizedBox(height: 16),
             ],
           ),
@@ -234,10 +210,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildFirstNameField(BuildContext context) {
+  Widget _buildFirstNameField(BuildContext context, ProfileState state) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: TextFormField(
+        enabled: state.updateProfileRequestState is! RequestStateLoading,
         controller: firstNameController,
         decoration: InputDecoration(
           labelText: 'First Name',
@@ -269,10 +246,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildLastNameField(BuildContext context) {
+  Widget _buildLastNameField(BuildContext context, ProfileState state) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: TextFormField(
+        enabled: state.updateProfileRequestState is! RequestStateLoading,
         controller: lastNameController,
         decoration: InputDecoration(
           labelText: 'Last Name',
@@ -370,5 +348,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  Widget _handleLoadingState(BuildContext context, ProfileState state) {
+    return state.isLoading ? loadingView(context) : const SizedBox.shrink();
   }
 }

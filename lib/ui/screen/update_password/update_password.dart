@@ -24,7 +24,8 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => UpdatePasswordBloc(GetIt.I.get(), GetIt.I.get()),
+      create: (context) =>
+          UpdatePasswordBloc(GetIt.I.get(), GetIt.I.get(), context),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.primary,

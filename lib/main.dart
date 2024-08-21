@@ -5,7 +5,7 @@ import 'package:meta_bio/repository/auth_repository.dart';
 import 'package:meta_bio/repository/exam_repository.dart';
 import 'package:meta_bio/repository/module_repository.dart';
 import 'package:meta_bio/repository/quiz_repository.dart';
-import 'package:meta_bio/service/api_service.dart';
+import 'package:meta_bio/service/dio_provider.dart';
 import 'package:meta_bio/ui/screen/splash/splash.dart';
 import 'package:meta_bio/ui/theme/my_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,7 +38,7 @@ Future<void> justGetIt() async {
   GetIt.I.registerSingleton<SharedPreferences>(
       await SharedPreferences.getInstance());
   GetIt.I.registerSingleton<FlutterSecureStorage>(const FlutterSecureStorage());
-  GetIt.I.registerSingleton<ApiService>(ApiService(GetIt.I.get()));
+  GetIt.I.registerSingleton<DioProvider>(DioProvider(GetIt.I.get()));
   GetIt.I.registerSingleton<AuthRepository>(
       AuthRepository(GetIt.I.get(), GetIt.I.get(), GetIt.I.get()));
   GetIt.I.registerSingleton<ModuleRepository>(ModuleRepository(GetIt.I.get()));

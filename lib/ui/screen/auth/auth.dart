@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/ui/component/loading_view.dart';
+import 'package:meta_bio/ui/component/snackbar.dart';
 import 'package:meta_bio/ui/screen/auth/bloc/auth_bloc.dart';
 import 'package:meta_bio/ui/screen/dashboard/dashboard.dart';
 import 'package:meta_bio/ui/theme/my_theme.dart';
@@ -12,19 +13,12 @@ class AuthScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocProvider(
-        create: (context) => AuthBloc(GetIt.I.get()),
-        child: BlocConsumer<AuthBloc, AuthState>(
+    return BlocProvider(
+      create: (context) => AuthBloc(GetIt.I.get(), context),
+      child: Scaffold(
+        body: BlocConsumer<AuthBloc, AuthState>(
           listener: (context, state) {
-            if (state.loginRequestState is RequestStateSuccess) {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const DashboardScreen()),
-                (route) => false,
-              );
-            } else if (state.loginRequestState is RequestStateError) {}
+            _handleLoginRequestState(context, state);
           },
           builder: (context, state) {
             return Stack(
@@ -32,15 +26,27 @@ class AuthScreen extends StatelessWidget {
                 _buildBackgroundContainer(),
                 _buildBackground(context),
                 _buildContent(context, state),
-                state.loginRequestState is RequestStateLoading
-                    ? loadingView(context)
-                    : const SizedBox.shrink(),
+                _handleLoadingState(context, state),
               ],
             );
           },
         ),
       ),
     );
+  }
+
+  void _handleLoginRequestState(BuildContext context, AuthState state) {
+    final loginRequestState = state.loginRequestState;
+
+    if (loginRequestState is RequestStateSuccess) {
+      showSuccessSnackBar(context, 'Successfully logged in');
+
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => const DashboardScreen(),
+        ),
+      );
+    }
   }
 
   Widget _buildBackgroundContainer() {
@@ -205,5 +211,11 @@ class AuthScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _handleLoadingState(BuildContext context, AuthState state) {
+    return state.loginRequestState is RequestStateLoading
+        ? loadingView(context)
+        : const SizedBox.shrink();
   }
 }
