@@ -2,13 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:meta_bio/domain/answer.dart';
 import 'package:meta_bio/domain/exam.dart';
 import 'package:meta_bio/domain/request_state.dart';
-import 'package:meta_bio/service/api_service.dart';
+import 'package:meta_bio/service/dio_provider.dart';
 
 class ExamRepository {
   late Dio _dio;
 
-  ExamRepository(ApiService apiService) {
-    _dio = apiService.dio;
+  ExamRepository(DioProvider dioProvider) {
+    _dio = dioProvider.dio;
   }
 
   Future<RequestState<List<Exam>>> getExams(int moduleId) async {

@@ -3,18 +3,19 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/repository/auth_repository.dart';
+import 'package:meta_bio/util/request_state_error_handler_bloc.dart';
 
 part 'update_password_bloc.freezed.dart';
 part 'update_password_event.dart';
 part 'update_password_state.dart';
 
-class UpdatePasswordBloc
-    extends Bloc<UpdatePasswordEvent, UpdatePasswordState> {
+class UpdatePasswordBloc extends RequestStateErrorHandlerBloc<
+    UpdatePasswordEvent, UpdatePasswordState> {
   final AuthRepository _authRepository;
   final FlutterSecureStorage _secureStorage;
 
-  UpdatePasswordBloc(this._authRepository, this._secureStorage)
-      : super(const UpdatePasswordState.initial()) {
+  UpdatePasswordBloc(this._authRepository, this._secureStorage, context)
+      : super(const UpdatePasswordState.initial(), context) {
     on<OldPasswordChanged>(_oldPasswordChanged);
     on<NewPasswordChanged>(_newPasswordChanged);
     on<ToggleOldPasswordVisibility>(_toggleOldPasswordVisibility);
@@ -59,6 +60,8 @@ class UpdatePasswordBloc
 
     final requestState =
         await _authRepository.updatePassword(state.newPassword);
+
+    super.handleRequestStateError(requestState);
 
     emit(state.copyWith(updatePasswordRequestState: requestState));
   }

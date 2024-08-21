@@ -16,8 +16,9 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocProvider(
-        create: (context) => SplashBloc(GetIt.I.get(), GetIt.I.get())
-          ..add(const SplashEvent.started()),
+        create: (context) =>
+            SplashBloc(GetIt.I.get(), GetIt.I.get(), GetIt.I.get())
+              ..add(const SplashEvent.started()),
         child: BlocConsumer<SplashBloc, SplashState>(
           listener: (context, state) {
             if (state is SplashOpenNextScreen) {

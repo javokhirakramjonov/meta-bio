@@ -21,7 +21,7 @@ class _ModulesScreenState extends State<ModulesScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ModulesBloc(GetIt.I.get(), GetIt.I.get())
+      create: (context) => ModulesBloc(GetIt.I.get(), context)
         ..add(const ModulesEvent.started()),
       child: BlocConsumer<ModulesBloc, ModulesState>(
         listener: (context, state) {

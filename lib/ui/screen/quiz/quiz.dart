@@ -32,7 +32,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
     return BlocProvider(
       create: (context) =>
-          QuizBloc(GetIt.I.get(), GetIt.I.get(), widget.exam.id)
+          QuizBloc(GetIt.I.get(), GetIt.I.get(), widget.exam.id, context)
             ..add(const Started()),
       child: BlocConsumer<QuizBloc, QuizState>(
         listener: (context, state) {

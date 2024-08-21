@@ -4,7 +4,8 @@ part of 'modules_bloc.dart';
 class ModulesEvent with _$ModulesEvent {
   const factory ModulesEvent.started() = Started;
 
-  const factory ModulesEvent.profileUpdated(Profile? profile) = ProfileUpdated;
+  const factory ModulesEvent.profileLoadedFromGlobal(Profile? profile) =
+      ProfileLoadedFromGlobal;
 
   const factory ModulesEvent.loadModules() = LoadModules;
 }

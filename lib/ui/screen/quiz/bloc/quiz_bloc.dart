@@ -6,17 +6,18 @@ import 'package:meta_bio/domain/question_type.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/repository/exam_repository.dart';
 import 'package:meta_bio/repository/quiz_repository.dart';
+import 'package:meta_bio/util/request_state_error_handler_bloc.dart';
 
 part 'quiz_bloc.freezed.dart';
 part 'quiz_event.dart';
 part 'quiz_state.dart';
 
-class QuizBloc extends Bloc<QuizEvent, QuizState> {
+class QuizBloc extends RequestStateErrorHandlerBloc<QuizEvent, QuizState> {
   final QuizRepository _quizRepository;
   final ExamRepository _examRepository;
 
-  QuizBloc(this._quizRepository, this._examRepository, int examId)
-      : super(QuizState.initial(examId: examId)) {
+  QuizBloc(this._quizRepository, this._examRepository, int examId, context)
+      : super(QuizState.initial(examId: examId), context) {
     on<Started>(_onStarted);
     on<VariantSelected>(_onVariantSelected);
     on<Submit>(_onSubmit);
@@ -33,6 +34,8 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
 
     final questionsRequestState =
         await _quizRepository.getQuestions(state.examId);
+
+    super.handleRequestStateError(questionsRequestState);
 
     var questions = <Question>[];
     Map<int, Set<int>> selectedVariantIds = {};
@@ -58,6 +61,8 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
 
     final readyToStartRequestState =
         await _quizRepository.readyToStart(state.examId);
+
+    super.handleRequestStateError(readyToStartRequestState);
 
     emit(state.copyWith(
       readyToStartRequestState: readyToStartRequestState,
@@ -106,6 +111,8 @@ class QuizBloc extends Bloc<QuizEvent, QuizState> {
 
     final submitRequestState =
         await _examRepository.submit(state.examId, answers);
+
+    super.handleRequestStateError(submitRequestState);
 
     emit(state.copyWith(submitRequestState: submitRequestState));
   }

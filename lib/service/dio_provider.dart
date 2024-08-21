@@ -1,13 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:meta_bio/util/global.dart';
 
-class ApiService {
+class DioProvider {
   static const String baseUrl = 'http://46.101.218.225';
 
   late Dio _dio;
   late FlutterSecureStorage _secureStorage;
 
-  ApiService(FlutterSecureStorage secureStorage) {
+  DioProvider(FlutterSecureStorage secureStorage) {
     _secureStorage = secureStorage;
 
     _dio = Dio(BaseOptions(baseUrl: baseUrl));
@@ -15,6 +16,7 @@ class ApiService {
     _dio.interceptors.add(InterceptorsWrapper(
       onRequest: _onRequest,
       onError: _onError,
+      onResponse: _onResponse,
     ));
   }
 
@@ -29,7 +31,21 @@ class ApiService {
   }
 
   void _onError(DioException error, ErrorInterceptorHandler handler) {
+    final errorMessage =
+        'Path of request: ${error.requestOptions.path}\n\nError: ${error.message}';
+
+    logger.e(errorMessage);
+
     handler.next(error);
+  }
+
+  void _onResponse(Response response, ResponseInterceptorHandler handler) {
+    final responseMessage =
+        'Path of request: ${response.requestOptions.path}\n\nResponse: ${response.data}';
+
+    logger.d(responseMessage);
+
+    handler.next(response);
   }
 
   Dio get dio => _dio;

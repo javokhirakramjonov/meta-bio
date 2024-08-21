@@ -3,15 +3,17 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meta_bio/domain/exam.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/repository/exam_repository.dart';
+import 'package:meta_bio/util/request_state_error_handler_bloc.dart';
 
 part 'exams_bloc.freezed.dart';
 part 'exams_event.dart';
 part 'exams_state.dart';
 
-class ExamsBloc extends Bloc<ExamsEvent, ExamsState> {
+class ExamsBloc extends RequestStateErrorHandlerBloc<ExamsEvent, ExamsState> {
   final ExamRepository _examRepository;
 
-  ExamsBloc(this._examRepository) : super(const ExamsState.initial()) {
+  ExamsBloc(this._examRepository, context)
+      : super(const ExamsState.initial(), context) {
     on<Started>(_started);
   }
 
@@ -21,6 +23,8 @@ class ExamsBloc extends Bloc<ExamsEvent, ExamsState> {
     await Future.delayed(const Duration(milliseconds: 200));
 
     final examsRequestState = await _examRepository.getExams(event.moduleId);
+
+    super.handleRequestStateError(examsRequestState);
 
     emit(state.copyWith(examsRequestState: examsRequestState));
   }
