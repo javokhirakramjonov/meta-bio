@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:meta_bio/domain/exam.dart';
+import 'package:meta_bio/domain/exam_result.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/ui/component/loading_view.dart';
+import 'package:meta_bio/ui/screen/exam_result/exam_result.dart';
 import 'package:meta_bio/ui/screen/quiz/bloc/quiz_bloc.dart';
 import 'package:meta_bio/ui/screen/quiz/component/question.dart';
 
@@ -34,26 +36,27 @@ class _QuizScreenState extends State<QuizScreen> {
       create: (context) =>
           QuizBloc(GetIt.I.get(), GetIt.I.get(), widget.exam.id, context)
             ..add(const Started()),
-      child: BlocConsumer<QuizBloc, QuizState>(
-        listener: (context, state) {
-          if (state.submitRequestState is RequestStateSuccess) {
-            Navigator.of(
-              context,
-              rootNavigator: true,
-            ).pushReplacement(MaterialPageRoute(
-                builder: (context) => const Text(
-                    'Result Screen') //TODO Implement the result screen
-                ));
-          }
-        },
-        builder: (context, state) {
-          return Scaffold(
-            appBar: _buildAppBar(context),
-            body: Stack(
+      child: Scaffold(
+        appBar: _buildAppBar(context),
+        body: BlocConsumer<QuizBloc, QuizState>(
+          listener: (context, state) {
+            final submitRequestState = state.submitRequestState;
+
+            if (submitRequestState is RequestStateSuccess<ExamResult>) {
+              Navigator.of(
+                context,
+                rootNavigator: true,
+              ).pushReplacement(MaterialPageRoute(
+                  builder: (context) =>
+                      ExamResultScreen(examResult: submitRequestState.data)));
+            }
+          },
+          builder: (context, state) {
+            return Stack(
               children: [
                 _buildBackground(),
                 _buildTopContainer(context, screenHeight),
-                state.questions.isNotEmpty
+                state.readyToStartRequestState is RequestStateSuccess
                     ? Column(
                         children: [
                           _buildQuestionsPageView(context, state),
@@ -63,9 +66,9 @@ class _QuizScreenState extends State<QuizScreen> {
                     : const SizedBox.shrink(),
                 state.isLoading ? loadingView(context) : const SizedBox.shrink()
               ],
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

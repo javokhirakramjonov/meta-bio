@@ -41,6 +41,8 @@ class AuthRepository {
       }
 
       return const RequestState.success(null);
+    } on DioException catch (e) {
+      return RequestState.error(e.message.toString());
     } catch (e) {
       return RequestState.error(e.toString());
     }
@@ -54,6 +56,8 @@ class AuthRepository {
       await _saveProfile(profile);
 
       return RequestStateSuccess(profile);
+    } on DioException catch (e) {
+      return RequestState.error(e.message.toString());
     } catch (e) {
       return RequestState.error(e.toString());
     }
@@ -90,6 +94,8 @@ class AuthRepository {
           shouldDownloadImage: false);
 
       return const RequestState.success(null);
+    } on DioException catch (e) {
+      return RequestState.error(e.message.toString());
     } catch (e) {
       return RequestState.error(e.toString());
     }
@@ -124,6 +130,8 @@ class AuthRepository {
       await _secureStorage.write(key: 'password', value: newPassword);
 
       return const RequestState.success(null);
+    } on DioException catch (e) {
+      return RequestState.error(e.message.toString());
     } catch (e) {
       return RequestState.error(e.toString());
     }
@@ -146,6 +154,8 @@ class AuthRepository {
       }
 
       return const RequestState.success(null);
+    } on DioException catch (e) {
+      return RequestState.error(e.message.toString());
     } catch (e) {
       return RequestState.error(e.toString());
     }

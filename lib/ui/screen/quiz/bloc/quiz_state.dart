@@ -5,11 +5,11 @@ class QuizState with _$QuizState {
   const factory QuizState.initial({
     required int examId,
     @Default({}) Map<int, Set<int>> selectedVariantIds,
-    @Default(RequestStateInitial()) RequestState<void> submitRequestState,
+    @Default(RequestStateInitial()) RequestState<ExamResult> submitRequestState,
     @Default(RequestStateInitial())
     RequestState<void> loadQuestionsRequestState,
     @Default([]) List<Question> questions,
-    @Default(RequestStateInitial()) readyToStartRequestState,
+    @Default(RequestStateInitial()) RequestState readyToStartRequestState,
     @Default('00:00') String time,
   }) = _Initial;
 

@@ -14,12 +14,12 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: BlocProvider(
-        create: (context) =>
-            SplashBloc(GetIt.I.get(), GetIt.I.get(), GetIt.I.get())
-              ..add(const SplashEvent.started()),
-        child: BlocConsumer<SplashBloc, SplashState>(
+    return BlocProvider(
+      create: (context) =>
+          SplashBloc(GetIt.I.get(), GetIt.I.get(), GetIt.I.get())
+            ..add(const SplashEvent.started()),
+      child: Scaffold(
+        body: BlocConsumer<SplashBloc, SplashState>(
           listener: (context, state) {
             if (state is SplashOpenNextScreen) {
               Navigator.pushAndRemoveUntil(

@@ -31,12 +31,16 @@ class DioProvider {
   }
 
   void _onError(DioException error, ErrorInterceptorHandler handler) {
-    final errorMessage =
-        'Path of request: ${error.requestOptions.path}\n\nError: ${error.message}';
+    final path = error.requestOptions.path;
+    final errorMessage = error.response?.data['errorMessage'] ??
+        error.message ??
+        'Something went wrong';
 
-    logger.e(errorMessage);
+    final errorForLog = 'Path of request: $path\n\nError: $errorMessage';
 
-    handler.next(error);
+    logger.e(errorForLog);
+
+    handler.next(error.copyWith(error: errorMessage));
   }
 
   void _onResponse(Response response, ResponseInterceptorHandler handler) {
