@@ -22,39 +22,39 @@ class _ExamsScreenState extends State<ExamsScreen> {
     return BlocProvider(
       create: (context) => ExamsBloc(GetIt.I.get(), context)
         ..add(ExamsEvent.started(widget.moduleId)),
-      child: BlocConsumer<ExamsBloc, ExamsState>(
-        listener: (context, state) {
-          final examsRequestState = state.examsRequestState;
-
-          if (examsRequestState is RequestStateError<List<Exam>>) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(examsRequestState.errorMessage)),
-            );
-          }
-        },
-        builder: (context, state) {
-          final examsRequestState = state.examsRequestState;
-
-          return Scaffold(
-            appBar: AppBar(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(16),
-                ),
-              ),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              elevation: 0,
-              title: const Text(
-                'Exams',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              centerTitle: true,
+      child: Scaffold(
+        appBar: AppBar(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(
+              bottom: Radius.circular(16),
             ),
-            body: RefreshIndicator(
+          ),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          elevation: 0,
+          title: const Text(
+            'Exams',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          centerTitle: true,
+        ),
+        body: BlocConsumer<ExamsBloc, ExamsState>(
+          listener: (context, state) {
+            final examsRequestState = state.examsRequestState;
+
+            if (examsRequestState is RequestStateError<List<Exam>>) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(examsRequestState.errorMessage)),
+              );
+            }
+          },
+          builder: (context, state) {
+            final examsRequestState = state.examsRequestState;
+
+            return RefreshIndicator(
               onRefresh: () async {
                 context
                     .read<ExamsBloc>()
@@ -65,9 +65,9 @@ class _ExamsScreenState extends State<ExamsScreen> {
                   : examsRequestState is RequestStateLoading
                       ? const ExamsShimmerList()
                       : const Center(child: Text('No exams available')),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

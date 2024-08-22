@@ -19,6 +19,8 @@ class QuizRepository {
           .toList();
 
       return RequestState.success(modules);
+    } on DioException catch (e) {
+      return RequestState.error(e.message.toString());
     } catch (e) {
       return RequestState.error(e.toString());
     }
@@ -29,6 +31,8 @@ class QuizRepository {
       await _dio.post('/api/exams/$examId/start');
 
       return const RequestState.success(null);
+    } on DioException catch (e) {
+      return RequestState.error(e.message.toString());
     } catch (e) {
       return RequestState.error(e.toString());
     }

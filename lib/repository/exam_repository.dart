@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:meta_bio/domain/answer.dart';
 import 'package:meta_bio/domain/exam.dart';
+import 'package:meta_bio/domain/exam_result.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/service/dio_provider.dart';
+import 'package:meta_bio/util/global.dart';
 
 class ExamRepository {
   late Dio _dio;
@@ -21,18 +23,30 @@ class ExamRepository {
           (response.data['data'] as List).map((e) => Exam.fromJson(e)).toList();
 
       return RequestState.success(exams);
+    } on DioException catch (e) {
+      return RequestState.error(e.message.toString());
     } catch (e) {
       return RequestState.error(e.toString());
     }
   }
 
-  Future<RequestState<void>> submit(int examId, List<Answer> answers) async {
+  Future<RequestState<ExamResult>> submit(
+      int examId, List<Answer> answers) async {
     try {
-      await _dio.post(
+      final response = await _dio.post(
         '/api/exams/$examId/submit',
         data: {'answers': answers.map((e) => e.toJson()).toList()},
       );
-      return const RequestState.success(null);
+
+      final examResult = ExamResult.fromJson(response.data['json']);
+
+      globalProfileObservable.value = globalProfileObservable.value?.copyWith(
+        score: examResult.user.score,
+      );
+
+      return RequestState.success(examResult);
+    } on DioException catch (e) {
+      return RequestState.error(e.error.toString());
     } catch (e) {
       return RequestState.error(e.toString());
     }

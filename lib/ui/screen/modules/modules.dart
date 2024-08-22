@@ -23,15 +23,15 @@ class _ModulesScreenState extends State<ModulesScreen> {
     return BlocProvider(
       create: (context) => ModulesBloc(GetIt.I.get(), context)
         ..add(const ModulesEvent.started()),
-      child: BlocConsumer<ModulesBloc, ModulesState>(
-        listener: (context, state) {
-          //TODO: implement listener
-        },
-        builder: (context, state) {
-          final modulesRequestState = state.modulesRequestState;
+      child: Scaffold(
+        body: BlocConsumer<ModulesBloc, ModulesState>(
+          listener: (context, state) {
+            //TODO: implement listener
+          },
+          builder: (context, state) {
+            final modulesRequestState = state.modulesRequestState;
 
-          return Scaffold(
-            body: Column(
+            return Column(
               children: [
                 _buildHeader(context, state),
                 Expanded(
@@ -47,16 +47,16 @@ class _ModulesScreenState extends State<ModulesScreen> {
                           : const ModulesShimmerList(),
                 )),
               ],
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
 
   Widget _buildHeader(BuildContext context, ModulesState state) {
     return Container(
-      height: 115,
+      height: 128,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.primary,
         borderRadius: const BorderRadius.only(
