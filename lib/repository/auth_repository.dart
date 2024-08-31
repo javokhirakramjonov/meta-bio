@@ -41,6 +41,8 @@ class AuthRepository {
       }
 
       return const RequestState.success(null);
+    } on DioException catch (e) {
+      return RequestState.error(e.message.toString());
     } catch (e) {
       return RequestState.error(e.toString());
     }
@@ -54,6 +56,8 @@ class AuthRepository {
       await _saveProfile(profile);
 
       return RequestStateSuccess(profile);
+    } on DioException catch (e) {
+      return RequestState.error(e.message.toString());
     } catch (e) {
       return RequestState.error(e.toString());
     }
@@ -67,9 +71,11 @@ class AuthRepository {
       final avatarFileName =
           "${now.toString()}.${profile.avatar.split('.').last}";
 
-      var avatarFile = await _downloadImage(profile.avatar, avatarFileName);
+      if (profile.avatar.isNotEmpty) {
+        var avatarFile = await _downloadImage(profile.avatar, avatarFileName);
 
-      profile = profile.copyWith(avatar: avatarFile.path);
+        profile = profile.copyWith(avatar: avatarFile.path);
+      }
     }
 
     await _sharedPreferences.setString('profile', jsonEncode(profile));
@@ -90,6 +96,8 @@ class AuthRepository {
           shouldDownloadImage: false);
 
       return const RequestState.success(null);
+    } on DioException catch (e) {
+      return RequestState.error(e.message.toString());
     } catch (e) {
       return RequestState.error(e.toString());
     }
@@ -124,6 +132,8 @@ class AuthRepository {
       await _secureStorage.write(key: 'password', value: newPassword);
 
       return const RequestState.success(null);
+    } on DioException catch (e) {
+      return RequestState.error(e.message.toString());
     } catch (e) {
       return RequestState.error(e.toString());
     }
@@ -146,6 +156,8 @@ class AuthRepository {
       }
 
       return const RequestState.success(null);
+    } on DioException catch (e) {
+      return RequestState.error(e.message.toString());
     } catch (e) {
       return RequestState.error(e.toString());
     }

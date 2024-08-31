@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meta_bio/domain/answer.dart';
+import 'package:meta_bio/domain/exam_result.dart';
 import 'package:meta_bio/domain/question.dart';
 import 'package:meta_bio/domain/question_type.dart';
 import 'package:meta_bio/domain/request_state.dart';

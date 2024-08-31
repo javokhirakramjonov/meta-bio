@@ -9,9 +9,10 @@ class Profile {
   final String lastName;
   final String phoneNumber;
   final String avatar;
+  final int score;
 
-  Profile(
-      this.id, this.firstName, this.lastName, this.phoneNumber, this.avatar);
+  Profile(this.id, this.firstName, this.lastName, this.phoneNumber, this.avatar,
+      this.score);
 
   factory Profile.fromJson(Map<String, dynamic> json) =>
       _$ProfileFromJson(json);
@@ -24,6 +25,7 @@ class Profile {
     String? lastName,
     String? phoneNumber,
     String? avatar,
+    int? score,
   }) {
     return Profile(
       id ?? this.id,
@@ -31,6 +33,7 @@ class Profile {
       lastName ?? this.lastName,
       phoneNumber ?? this.phoneNumber,
       avatar ?? this.avatar,
+      score ?? this.score,
     );
   }
 }

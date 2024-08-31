@@ -24,5 +24,6 @@ final ThemeData darkTheme = ThemeData(
     onSecondary: Colors.white,
     surface: Color(0xFF0D0D0D),
     onSurface: Colors.white,
+    error: Color(0xFFF78888),
   ),
 );

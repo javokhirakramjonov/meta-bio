@@ -19,6 +19,8 @@ class ModuleRepository {
           .toList();
 
       return RequestState.success(modules);
+    } on DioException catch (e) {
+      return RequestState.error(e.message.toString());
     } catch (e) {
       return RequestState.error(e.toString());
     }

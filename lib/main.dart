@@ -8,11 +8,15 @@ import 'package:meta_bio/repository/quiz_repository.dart';
 import 'package:meta_bio/service/dio_provider.dart';
 import 'package:meta_bio/ui/screen/splash/splash.dart';
 import 'package:meta_bio/ui/theme/my_theme.dart';
+import 'package:meta_bio/util/profile_saver.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await justGetIt();
+
+  final profileSaver = GetIt.I.get<ProfileSaver>();
+  profileSaver.start();
 
   runApp(const MyApp());
 }
@@ -44,4 +48,5 @@ Future<void> justGetIt() async {
   GetIt.I.registerSingleton<ModuleRepository>(ModuleRepository(GetIt.I.get()));
   GetIt.I.registerSingleton<ExamRepository>(ExamRepository(GetIt.I.get()));
   GetIt.I.registerSingleton<QuizRepository>(QuizRepository(GetIt.I.get()));
+  GetIt.I.registerSingleton<ProfileSaver>(ProfileSaver(GetIt.I.get()));
 }
