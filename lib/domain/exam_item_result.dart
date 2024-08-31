@@ -1,26 +1,23 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:meta_bio/domain/user.dart';
 
-part 'exam_result.g.dart';
+part 'exam_item_result.g.dart';
 
 @JsonSerializable()
-class ExamResult {
-  final User user;
+class ExamItemResult {
   final int score;
   final int correctCount;
   final int inCorrectCount;
   final String duration;
 
-  ExamResult({
-    required this.user,
+  ExamItemResult({
     required this.score,
     required this.correctCount,
     required this.inCorrectCount,
     required this.duration,
   });
 
-  factory ExamResult.fromJson(Map<String, dynamic> json) =>
-      _$ExamResultFromJson(json);
+  factory ExamItemResult.fromJson(Map<String, dynamic> json) =>
+      _$ExamItemResultFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ExamResultToJson(this);
+  Map<String, dynamic> toJson() => _$ExamItemResultToJson(this);
 }

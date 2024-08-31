@@ -71,9 +71,11 @@ class AuthRepository {
       final avatarFileName =
           "${now.toString()}.${profile.avatar.split('.').last}";
 
-      var avatarFile = await _downloadImage(profile.avatar, avatarFileName);
+      if (profile.avatar.isNotEmpty) {
+        var avatarFile = await _downloadImage(profile.avatar, avatarFileName);
 
-      profile = profile.copyWith(avatar: avatarFile.path);
+        profile = profile.copyWith(avatar: avatarFile.path);
+      }
     }
 
     await _sharedPreferences.setString('profile', jsonEncode(profile));

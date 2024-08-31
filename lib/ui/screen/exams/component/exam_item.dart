@@ -83,6 +83,12 @@ class ExamItem extends StatelessWidget {
   }
 
   Widget buildResultRow(BuildContext context) {
+    final examItemResult = exam.examItemResult;
+
+    if (examItemResult == null) {
+      return const Text('No result found');
+    }
+
     return Row(
       children: [
         const Text(
@@ -100,8 +106,8 @@ class ExamItem extends StatelessWidget {
           width: 16,
         ),
         const SizedBox(width: 4),
-        const Text('+100',
-            style: TextStyle(color: Color(0xFFC5CCDB))), //TODO: exam.score,
+        Text('+${examItemResult.score}',
+            style: const TextStyle(color: Color(0xFFC5CCDB))),
         const SizedBox(width: 16),
         SvgPicture.asset(
           'assets/icons/tick.svg',
@@ -110,8 +116,8 @@ class ExamItem extends StatelessWidget {
           width: 18,
         ),
         const SizedBox(width: 4),
-        const Text('20',
-            style: TextStyle(color: Color(0xFFC5CCDB))), //TODO: exam.correct,
+        Text(examItemResult.correctCount.toString(),
+            style: const TextStyle(color: Color(0xFFC5CCDB))),
         const SizedBox(width: 16),
         SvgPicture.asset(
           'assets/icons/close.svg',
@@ -120,8 +126,13 @@ class ExamItem extends StatelessWidget {
           width: 18,
         ),
         const SizedBox(width: 4),
-        const Text('3',
-            style: TextStyle(color: Color(0xFFC5CCDB))), //TODO: exam.wrong,
+        Text(examItemResult.inCorrectCount.toString(),
+            style: const TextStyle(color: Color(0xFFC5CCDB))),
+        const SizedBox(width: 16),
+        const Icon(Icons.timer, color: Color(0xFFF7D426), size: 18),
+        const SizedBox(width: 4),
+        Text(examItemResult.duration,
+            style: const TextStyle(color: Color(0xFFC5CCDB))),
       ],
     );
   }

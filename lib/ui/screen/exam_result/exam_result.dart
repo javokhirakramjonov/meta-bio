@@ -13,7 +13,8 @@ class ExamResultScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ExamResultBloc(examResult, context),
+      create: (context) =>
+          ExamResultBloc(examResult, context)..add(const Started()),
       child: Scaffold(
         body: BlocConsumer<ExamResultBloc, ExamResultState>(
           listener: (context, state) {},

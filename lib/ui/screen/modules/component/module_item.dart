@@ -50,7 +50,7 @@ class ModuleItem extends StatelessWidget {
                 ),
               ),
               TextSpan(
-                text: "30", //TODO: module.examCount.toString(),
+                text: module.examsCount.toString(),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,

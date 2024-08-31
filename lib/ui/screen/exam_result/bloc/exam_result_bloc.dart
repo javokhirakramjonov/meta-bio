@@ -3,6 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meta_bio/domain/exam_result.dart';
 import 'package:meta_bio/domain/profile.dart';
 import 'package:meta_bio/domain/request_state.dart';
+import 'package:meta_bio/util/global.dart';
 import 'package:meta_bio/util/observer.dart';
 import 'package:meta_bio/util/request_state_error_handler_bloc.dart';
 
@@ -17,18 +18,29 @@ class ExamResultBloc
       : super(ExamResultState.state(examResult: examResult), context) {
     on<LoadAllStudentsExamResults>(_loadAllStudentsExamResults);
     on<ProfileLoadedFromGlobal>(_profileUpdated);
+    on<Started>(_started);
   }
 
   void _loadAllStudentsExamResults(
-      LoadAllStudentsExamResults event, Emitter<ExamResultState> emit) {}
+      LoadAllStudentsExamResults event, Emitter<ExamResultState> emit) async {}
 
   void _profileUpdated(
-      ProfileLoadedFromGlobal event, Emitter<ExamResultState> emit) {
+      ProfileLoadedFromGlobal event, Emitter<ExamResultState> emit) async {
     emit(state.copyWith(profile: event.profile));
   }
 
+  void _started(Started event, Emitter<ExamResultState> emit) async {
+    globalProfileObservable.addListener(this);
+  }
+
   @override
-  void notify(Profile? value) {
+  void notify(Profile? value) async {
     add(ProfileLoadedFromGlobal(value));
+  }
+
+  @override
+  Future<void> close() {
+    globalProfileObservable.removeListener(this);
+    return super.close();
   }
 }

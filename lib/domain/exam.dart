@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:meta_bio/domain/exam_item_result.dart';
 
 part 'exam.g.dart';
 
@@ -12,6 +13,7 @@ class Exam {
   final int rank;
   final int questionsCount;
   final int submissionsCount;
+  final ExamItemResult? examItemResult;
 
   Exam({
     required this.id,
@@ -22,6 +24,7 @@ class Exam {
     required this.rank,
     required this.questionsCount,
     required this.submissionsCount,
+    this.examItemResult,
   });
 
   factory Exam.fromJson(Map<String, dynamic> json) => _$ExamFromJson(json);
