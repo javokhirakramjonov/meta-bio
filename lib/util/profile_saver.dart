@@ -17,9 +17,9 @@ class ProfileSaver implements Observer<Profile?> {
   @override
   void notify(Profile? profile) async {
     if (profile == null) {
-      await _sharedPreferences.remove('profile');
-    } else {
-      await _sharedPreferences.setString('profile', jsonEncode(profile));
+      return;
     }
+
+    await _sharedPreferences.setString('profile', jsonEncode(profile));
   }
 }
