@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:meta_bio/domain/exam_result.dart';
 import 'package:meta_bio/ui/screen/exam_result/bloc/exam_result_bloc.dart';
-import 'package:meta_bio/ui/screen/exam_result/component/result_tab.dart';
+import 'package:meta_bio/ui/screen/exam_result/component/exam_result_tabs.dart';
 
 class ExamResultScreen extends StatelessWidget {
+  final int examId;
   final ExamResult examResult;
 
-  const ExamResultScreen({super.key, required this.examResult});
+  const ExamResultScreen(
+      {super.key, required this.examResult, required this.examId});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          ExamResultBloc(examResult, context)..add(const Started()),
+          ExamResultBloc(GetIt.I.get(), examId, examResult, context)
+            ..add(const Started()),
       child: Scaffold(
         body: BlocConsumer<ExamResultBloc, ExamResultState>(
           listener: (context, state) {},
@@ -26,8 +30,8 @@ class ExamResultScreen extends StatelessWidget {
                   children: [
                     _buildHeader(context, state),
                     const SizedBox(height: 20),
-                    ResultTab(examResult: examResult),
-                    const Spacer(),
+                    Expanded(child: ExamResultTabs(examResultState: state)),
+                    const SizedBox(height: 20),
                     _buildBackButton(context),
                   ],
                 ),
@@ -62,23 +66,23 @@ class ExamResultScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Column(
+          Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Results',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: Color(0xFF0D0D0D),
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 'Check your result',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: const Color(0xFF0D0D0D).withOpacity(0.8),
                 ),
               ),
             ],
@@ -104,7 +108,7 @@ class ExamResultScreen extends StatelessWidget {
                 Text(
                   state.profile?.score.toString() ?? '0',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Color(0xFF0D0D0D),
                     fontSize: 24,
                     fontWeight: FontWeight.w700,
                   ),

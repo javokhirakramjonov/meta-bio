@@ -83,7 +83,7 @@ class ExamItem extends StatelessWidget {
   }
 
   Widget buildResultRow(BuildContext context) {
-    final examItemResult = exam.examItemResult;
+    final examItemResult = exam.result;
 
     if (examItemResult == null) {
       return const Text('No result found');
@@ -97,42 +97,59 @@ class ExamItem extends StatelessWidget {
               TextStyle(fontWeight: FontWeight.w600, color: Color(0xFFC5CCDB)),
         ),
         const Spacer(),
-        SvgPicture.asset(
-          'assets/icons/star.svg',
-          colorFilter: const ColorFilter.mode(
-            Color(0xFFF7D426),
-            BlendMode.srcIn,
-          ),
-          width: 16,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                SvgPicture.asset(
+                  'assets/icons/star.svg',
+                  colorFilter: const ColorFilter.mode(
+                    Color(0xFFF7D426),
+                    BlendMode.srcIn,
+                  ),
+                  width: 16,
+                ),
+                const SizedBox(width: 4),
+                Text('+${examItemResult.score}',
+                    style: const TextStyle(color: Color(0xFFC5CCDB))),
+                const SizedBox(width: 16),
+              ],
+            ),
+            Row(
+              children: [
+                const Icon(Icons.timer, color: Color(0xFFF7D426), size: 18),
+                const SizedBox(width: 4),
+                Text(examItemResult.duration,
+                    style: const TextStyle(color: Color(0xFFC5CCDB))),
+              ],
+            ),
+            Row(
+              children: [
+                SvgPicture.asset(
+                  'assets/icons/tick.svg',
+                  colorFilter: ColorFilter.mode(
+                      Theme.of(context).colorScheme.primary, BlendMode.srcIn),
+                  width: 18,
+                ),
+                const SizedBox(width: 4),
+                Text(examItemResult.correctCount.toString(),
+                    style: const TextStyle(color: Color(0xFFC5CCDB))),
+                const SizedBox(width: 16),
+                SvgPicture.asset(
+                  'assets/icons/close.svg',
+                  colorFilter: const ColorFilter.mode(
+                      Color(0xFFD83033), BlendMode.srcIn),
+                  width: 18,
+                ),
+                const SizedBox(width: 4),
+                Text(examItemResult.inCorrectCount.toString(),
+                    style: const TextStyle(color: Color(0xFFC5CCDB))),
+              ],
+            ),
+          ],
         ),
-        const SizedBox(width: 4),
-        Text('+${examItemResult.score}',
-            style: const TextStyle(color: Color(0xFFC5CCDB))),
         const SizedBox(width: 16),
-        SvgPicture.asset(
-          'assets/icons/tick.svg',
-          colorFilter: ColorFilter.mode(
-              Theme.of(context).colorScheme.primary, BlendMode.srcIn),
-          width: 18,
-        ),
-        const SizedBox(width: 4),
-        Text(examItemResult.correctCount.toString(),
-            style: const TextStyle(color: Color(0xFFC5CCDB))),
-        const SizedBox(width: 16),
-        SvgPicture.asset(
-          'assets/icons/close.svg',
-          colorFilter:
-              const ColorFilter.mode(Color(0xFFD83033), BlendMode.srcIn),
-          width: 18,
-        ),
-        const SizedBox(width: 4),
-        Text(examItemResult.inCorrectCount.toString(),
-            style: const TextStyle(color: Color(0xFFC5CCDB))),
-        const SizedBox(width: 16),
-        const Icon(Icons.timer, color: Color(0xFFF7D426), size: 18),
-        const SizedBox(width: 4),
-        Text(examItemResult.duration,
-            style: const TextStyle(color: Color(0xFFC5CCDB))),
       ],
     );
   }

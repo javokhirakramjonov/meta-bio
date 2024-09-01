@@ -13,7 +13,7 @@ class Exam {
   final int rank;
   final int questionsCount;
   final int submissionsCount;
-  final ExamItemResult? examItemResult;
+  final ExamItemResult? result;
 
   Exam({
     required this.id,
@@ -24,7 +24,7 @@ class Exam {
     required this.rank,
     required this.questionsCount,
     required this.submissionsCount,
-    this.examItemResult,
+    this.result,
   });
 
   factory Exam.fromJson(Map<String, dynamic> json) => _$ExamFromJson(json);

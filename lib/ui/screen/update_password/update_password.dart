@@ -28,6 +28,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
           UpdatePasswordBloc(GetIt.I.get(), GetIt.I.get(), context),
       child: Scaffold(
         appBar: AppBar(
+          iconTheme: const IconThemeData(color: Color(0xFF0D0D0D)),
           backgroundColor: Theme.of(context).colorScheme.primary,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(
@@ -37,7 +38,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
           title: const Text(
             'Update Password',
             style: TextStyle(
-              color: Colors.white,
+              color: Color(0xFF0D0D0D),
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),

@@ -33,9 +33,8 @@ class _QuizScreenState extends State<QuizScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return BlocProvider(
-      create: (context) =>
-          QuizBloc(GetIt.I.get(), GetIt.I.get(), widget.exam.id, context)
-            ..add(const Started()),
+      create: (context) => QuizBloc(GetIt.I.get(), widget.exam.id, context)
+        ..add(const Started()),
       child: Scaffold(
         appBar: _buildAppBar(context),
         body: BlocConsumer<QuizBloc, QuizState>(
@@ -47,8 +46,9 @@ class _QuizScreenState extends State<QuizScreen> {
                 context,
                 rootNavigator: true,
               ).pushReplacement(MaterialPageRoute(
-                  builder: (context) =>
-                      ExamResultScreen(examResult: submitRequestState.data)));
+                  builder: (context) => ExamResultScreen(
+                      examId: widget.exam.id,
+                      examResult: submitRequestState.data)));
             }
           },
           builder: (context, state) {
@@ -75,11 +75,12 @@ class _QuizScreenState extends State<QuizScreen> {
 
   AppBar _buildAppBar(BuildContext context) {
     return AppBar(
+      iconTheme: const IconThemeData(color: Color(0xFF0D0D0D)),
       backgroundColor: Theme.of(context).colorScheme.primary,
       title: Text(
         widget.exam.title,
         style: const TextStyle(
-          color: Colors.white,
+          color: Color(0xFF0D0D0D),
           fontSize: 24,
           fontWeight: FontWeight.bold,
         ),

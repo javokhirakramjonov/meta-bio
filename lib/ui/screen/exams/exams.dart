@@ -24,6 +24,7 @@ class _ExamsScreenState extends State<ExamsScreen> {
         ..add(ExamsEvent.started(widget.moduleId)),
       child: Scaffold(
         appBar: AppBar(
+          iconTheme: const IconThemeData(color: Color(0xFF0D0D0D)),
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(
               bottom: Radius.circular(16),
@@ -34,7 +35,7 @@ class _ExamsScreenState extends State<ExamsScreen> {
           title: const Text(
             'Exams',
             style: TextStyle(
-              color: Colors.white,
+              color: Color(0xFF0D0D0D),
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),

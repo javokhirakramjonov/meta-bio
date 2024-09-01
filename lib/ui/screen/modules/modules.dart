@@ -35,17 +35,18 @@ class _ModulesScreenState extends State<ModulesScreen> {
               children: [
                 _buildHeader(context, state),
                 Expanded(
-                    child: RefreshIndicator(
-                  onRefresh: () async {
-                    context
-                        .read<ModulesBloc>()
-                        .add(const ModulesEvent.loadModules());
-                  },
-                  child:
-                      modulesRequestState is RequestStateSuccess<List<Module>>
-                          ? _buildModulesList(modulesRequestState)
-                          : const ModulesShimmerList(),
-                )),
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      context
+                          .read<ModulesBloc>()
+                          .add(const ModulesEvent.loadModules());
+                    },
+                    child:
+                        modulesRequestState is RequestStateSuccess<List<Module>>
+                            ? _buildModulesList(modulesRequestState)
+                            : const ModulesShimmerList(),
+                  ),
+                ),
               ],
             );
           },
@@ -95,9 +96,10 @@ class _ModulesScreenState extends State<ModulesScreen> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Hello,',
           style: TextStyle(
+            color: const Color(0xFF0D0D0D).withOpacity(0.8),
             fontSize: 14,
             fontWeight: FontWeight.w500,
           ),
@@ -105,6 +107,7 @@ class _ModulesScreenState extends State<ModulesScreen> {
         Text(
           profile?.firstName ?? '',
           style: const TextStyle(
+            color: Color(0xFF0D0D0D),
             fontSize: 20,
             fontWeight: FontWeight.w800,
           ),
@@ -116,9 +119,7 @@ class _ModulesScreenState extends State<ModulesScreen> {
   Widget _buildModulesList(
       RequestStateSuccess<List<Module>> modulesRequestState) {
     return ListView.builder(
-      clipBehavior: Clip.none,
       padding: const EdgeInsets.all(20),
-      shrinkWrap: true,
       itemCount: modulesRequestState.data.length,
       itemBuilder: (context, index) {
         return Padding(
