@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:meta_bio/domain/answer.dart';
@@ -6,7 +8,6 @@ import 'package:meta_bio/domain/question.dart';
 import 'package:meta_bio/domain/question_type.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/repository/exam_repository.dart';
-import 'package:meta_bio/repository/quiz_repository.dart';
 import 'package:meta_bio/util/request_state_error_handler_bloc.dart';
 
 part 'quiz_bloc.freezed.dart';
@@ -14,12 +15,13 @@ part 'quiz_event.dart';
 part 'quiz_state.dart';
 
 class QuizBloc extends RequestStateErrorHandlerBloc<QuizEvent, QuizState> {
-  final QuizRepository _quizRepository;
   final ExamRepository _examRepository;
+  StreamSubscription<int>? _tickerSubscription;
 
-  QuizBloc(this._quizRepository, this._examRepository, int examId, context)
+  QuizBloc(this._examRepository, int examId, context)
       : super(QuizState.initial(examId: examId), context) {
     on<Started>(_onStarted);
+    on<TimerTicked>(_onTimerTicked);
     on<VariantSelected>(_onVariantSelected);
     on<Submit>(_onSubmit);
   }
@@ -34,7 +36,7 @@ class QuizBloc extends RequestStateErrorHandlerBloc<QuizEvent, QuizState> {
     ));
 
     final questionsRequestState =
-        await _quizRepository.getQuestions(state.examId);
+        await _examRepository.getQuestions(state.examId);
 
     super.handleRequestStateError(questionsRequestState);
 
@@ -61,9 +63,13 @@ class QuizBloc extends RequestStateErrorHandlerBloc<QuizEvent, QuizState> {
     ));
 
     final readyToStartRequestState =
-        await _quizRepository.readyToStart(state.examId);
+        await _examRepository.readyToStart(state.examId);
 
     super.handleRequestStateError(readyToStartRequestState);
+
+    if (readyToStartRequestState is RequestStateSuccess<void>) {
+      _startTimer();
+    }
 
     emit(state.copyWith(
       readyToStartRequestState: readyToStartRequestState,
@@ -106,7 +112,7 @@ class QuizBloc extends RequestStateErrorHandlerBloc<QuizEvent, QuizState> {
 
       return Answer(
         questionId: question.id,
-        variantIds: selectedVariantIds.toList(),
+        variants: selectedVariantIds.toList(),
       );
     });
 
@@ -116,5 +122,38 @@ class QuizBloc extends RequestStateErrorHandlerBloc<QuizEvent, QuizState> {
     super.handleRequestStateError(submitRequestState);
 
     emit(state.copyWith(submitRequestState: submitRequestState));
+  }
+
+  void _startTimer() {
+    _tickerSubscription?.cancel();
+
+    _tickerSubscription =
+        Stream.periodic(const Duration(seconds: 1), (x) => x + 1)
+            .listen((event) {
+      final currentSeconds = event;
+
+      final hours = currentSeconds ~/ 3600;
+      final minutes = (currentSeconds % 3600) ~/ 60;
+      final seconds = currentSeconds % 60;
+
+      var time =
+          '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+
+      if (hours > 0) {
+        time = '${hours.toString().padLeft(2, '0')}:$time';
+      }
+
+      add(QuizEvent.timerTicked(time));
+    });
+  }
+
+  void _onTimerTicked(TimerTicked event, Emitter<QuizState> emit) {
+    emit(state.copyWith(time: event.time));
+  }
+
+  @override
+  Future<void> close() {
+    _tickerSubscription?.cancel();
+    return super.close();
   }
 }

@@ -3,10 +3,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:meta_bio/domain/exam_result.dart';
 
-class ResultTab extends StatelessWidget {
+class MyResultTab extends StatelessWidget {
   final ExamResult examResult;
 
-  const ResultTab({super.key, required this.examResult});
+  const MyResultTab({super.key, required this.examResult});
 
   @override
   Widget build(BuildContext context) {
@@ -171,10 +171,13 @@ class ResultTab extends StatelessWidget {
           ],
         ),
       ),
-      LottieBuilder.asset(
-        height: 500,
-        'assets/animations/congrats.json',
-        repeat: false,
+      Transform.scale(
+        scale: 2,
+        child: LottieBuilder.asset(
+          height: 400,
+          'assets/animations/congrats.json',
+          repeat: false,
+        ),
       ),
     ]);
   }

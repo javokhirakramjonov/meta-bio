@@ -19,14 +19,15 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
   final FlutterSecureStorage _flutterSecureStorage;
   final SharedPreferences _sharedPreferences;
   final AuthRepository _authRepository;
+  final bool logOut;
 
-  SplashBloc(
-      this._flutterSecureStorage, this._sharedPreferences, this._authRepository)
+  SplashBloc(this._flutterSecureStorage, this._sharedPreferences,
+      this._authRepository, this.logOut)
       : super(const SplashState.state()) {
     on<SplashStarted>((event, emit) async {
       var profileJson = _sharedPreferences.getString('profile');
 
-      if (profileJson == null) {
+      if (profileJson == null || logOut) {
         await _authRepository.logout();
       } else {
         final profile = Profile.fromJson(jsonDecode(profileJson));

@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:meta_bio/ui/screen/splash/splash.dart';
 import 'package:meta_bio/util/global.dart';
 
 class DioProvider {
@@ -31,6 +33,15 @@ class DioProvider {
   }
 
   void _onError(DioException error, ErrorInterceptorHandler handler) {
+    if (error.response?.statusCode == 401) {
+      navigatorKey.currentState?.pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (context) => const SplashScreen(logOut: true)),
+          (route) => false);
+
+      return;
+    }
+
     final path = error.requestOptions.path;
     final errorMessage = error.response?.data['errorMessage'] ??
         error.message ??

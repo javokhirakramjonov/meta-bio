@@ -5,7 +5,9 @@ import 'package:lottie/lottie.dart';
 import 'package:meta_bio/ui/screen/splash/bloc/splash_bloc.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+  final bool logOut;
+
+  const SplashScreen({super.key, this.logOut = false});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -16,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          SplashBloc(GetIt.I.get(), GetIt.I.get(), GetIt.I.get())
+          SplashBloc(GetIt.I.get(), GetIt.I.get(), GetIt.I.get(), widget.logOut)
             ..add(const SplashEvent.started()),
       child: Scaffold(
         body: BlocConsumer<SplashBloc, SplashState>(
