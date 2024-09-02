@@ -91,6 +91,9 @@ flutter:
     - assets/icons/tick.svg
     - assets/icons/close.svg
     - assets/icons/cup_dark.svg
+    - assets/icons/gold.svg
+    - assets/icons/silver.svg
+    - assets/icons/bronze.svg
 
     # An image asset can refer to one or more resolution-specific "variants", see
     # https://flutter.dev/assets-and-images/#resolution-aware

@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:meta_bio/domain/answer.dart';
 import 'package:meta_bio/domain/exam.dart';
+import 'package:meta_bio/domain/exam_leader.dart';
 import 'package:meta_bio/domain/exam_result.dart';
 import 'package:meta_bio/domain/question.dart';
 import 'package:meta_bio/domain/request_state.dart';
-import 'package:meta_bio/domain/user.dart';
 import 'package:meta_bio/service/dio_provider.dart';
 import 'package:meta_bio/util/global.dart';
 
@@ -35,25 +35,12 @@ class ExamRepository {
   Future<RequestState<ExamResult>> submit(
       int examId, List<Answer> answers) async {
     try {
-      // final response = await _dio.post(
-      //   '/api/exams/$examId/submit',
-      //   data: {'answers': answers.map((e) => e.toJson()).toList()},
-      // );
-      //
-      // final examResult = ExamResult.fromJson(response.data['json']);
-
-      final examResult = ExamResult(
-        user: User(
-          avatar: '',
-          firstName: 'Student',
-          lastName: 'Surname',
-          score: 100,
-        ),
-        correctCount: 10,
-        inCorrectCount: 10,
-        duration: '10:10',
-        score: 20,
+      final response = await _dio.post(
+        '/api/exams/$examId/submit',
+        data: {'answers': answers.map((e) => e.toJson()).toList()},
       );
+
+      final examResult = ExamResult.fromJson(response.data['data']);
 
       globalProfileObservable.value = globalProfileObservable.value?.copyWith(
         score: examResult.user.score,
@@ -67,31 +54,14 @@ class ExamRepository {
     }
   }
 
-  Future<RequestState<List<ExamResult>>> getAllStudentsExamResults(
+  Future<RequestState<List<ExamLeader>>> getAllStudentsExamResults(
       int examId) async {
     try {
-      // final response = await _dio.get('/api/exams/$examId/results');
+      final response = await _dio.get('/api/exams/$examId/results');
 
-      // final List<ExamResult> examResults = (response.data['data'] as List)
-      //     .map((e) => ExamResult.fromJson(e))
-      //     .toList();
-
-      // TODO: Remove fake part
-      List<ExamResult> examResults = List.generate(50, (index) {
-        return ExamResult(
-          user: User(
-            avatar: '',
-            firstName: 'Student ${index + 1}',
-            lastName: 'Surname ${index + 1}',
-            score: 100,
-            rank: index + 1,
-          ),
-          correctCount: 10,
-          inCorrectCount: 10,
-          duration: '10:10',
-          score: 20,
-        );
-      });
+      final List<ExamLeader> examResults = (response.data['data'] as List)
+          .map((e) => ExamLeader.fromJson(e))
+          .toList();
 
       return RequestState.success(examResults);
     } on DioException catch (e) {

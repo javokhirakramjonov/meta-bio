@@ -5,7 +5,7 @@ class ExamResultState with _$ExamResultState {
   const factory ExamResultState.state({
     required ExamResult examResult,
     @Default(RequestStateInitial())
-    RequestState<List<ExamResult>> allStudentsExamResultRequestState,
+    RequestState<List<ExamLeader>> allStudentsExamResultRequestState,
     Profile? profile,
   }) = _ExamResultState;
 }

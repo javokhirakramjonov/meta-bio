@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:meta_bio/domain/exam_leader.dart';
 import 'package:meta_bio/domain/exam_result.dart';
 import 'package:meta_bio/domain/profile.dart';
 import 'package:meta_bio/domain/request_state.dart';
@@ -43,7 +44,6 @@ class ExamResultBloc
   }
 
   void _started(Started event, Emitter<ExamResultState> emit) async {
-    add(const LoadAllStudentsExamResults());
     globalProfileObservable.addListener(this);
   }
 
