@@ -4,8 +4,9 @@ import 'package:meta_bio/ui/screen/exams/exams.dart';
 
 class ModuleItem extends StatelessWidget {
   final Module module;
+  final String assetName;
 
-  const ModuleItem({super.key, required this.module});
+  const ModuleItem({super.key, required this.module, required this.assetName});
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +27,9 @@ class ModuleItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: const CircleAvatar(
+        leading: CircleAvatar(
           radius: 24,
-          backgroundImage: AssetImage('assets/images/dna.png'),
+          backgroundImage: AssetImage(assetName),
         ),
         title: Text(
           module.name,

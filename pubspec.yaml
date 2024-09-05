@@ -85,8 +85,6 @@ flutter:
   assets:
     - assets/animations/splash.json
     - assets/animations/congrats.json
-    - assets/images/avatar.png
-    - assets/images/dna.png
     - assets/icons/star.svg
     - assets/icons/tick.svg
     - assets/icons/close.svg
@@ -94,6 +92,16 @@ flutter:
     - assets/icons/gold.svg
     - assets/icons/silver.svg
     - assets/icons/bronze.svg
+    - assets/images/avatar.png
+    - assets/images/grade_5.jpg
+    - assets/images/grade_6.jpg
+    - assets/images/grade_7.jpg
+    - assets/images/grade_8.jpg
+    - assets/images/grade_9.jpg
+    - assets/images/grade_10.jpg
+    - assets/images/grade_11.jpg
+    - assets/images/variant.jpg
+    - assets/images/certificate.jpg
 
     # An image asset can refer to one or more resolution-specific "variants", see
     # https://flutter.dev/assets-and-images/#resolution-aware

@@ -120,7 +120,13 @@ class _ModulesScreenState extends State<ModulesScreen> {
       itemBuilder: (context, index) {
         return Padding(
           padding: const EdgeInsets.only(bottom: 16),
-          child: ModuleItem(module: modulesRequestState.data[index]),
+          child: ModuleItem(
+              module: modulesRequestState.data[index],
+              assetName: index < 6
+                  ? 'assets/images/grade_${index + 5}.jpg'
+                  : index == 7
+                      ? 'assets/images/variant.jpg'
+                      : 'assets/images/certificate.jpg'),
         );
       },
     );
