@@ -58,13 +58,17 @@ class _LeaderBoardTabState extends State<LeaderBoardTab> {
                     Text(examItemResult.rank.toString(),
                         style: const TextStyle(color: Color(0xFFC5CCDB))),
                     const SizedBox(width: 16),
-                    CircleAvatar(
-                      radius: 28,
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      child: ClipOval(
-                        child: Image.asset(
-                          'assets/images/avatar.png',
-                          width: 48,
+                    Container(
+                      width: 56,
+                      height: 56,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primary,
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          image: examItemResult.user.avatar != ""
+                              ? NetworkImage(examItemResult.user.avatar)
+                              : const AssetImage('assets/images/avatar.png'),
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
