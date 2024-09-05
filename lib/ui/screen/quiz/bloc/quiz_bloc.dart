@@ -119,8 +119,7 @@ class QuizBloc extends RequestStateHandlerBloc<QuizEvent, QuizState> {
     final submitRequestState =
         await _examRepository.submit(state.examId, answers);
 
-    super.handleRequestState(submitRequestState,
-        successMessage: 'Successfully submitted');
+    super.handleRequestState(submitRequestState);
 
     emit(state.copyWith(submitRequestState: submitRequestState));
   }
