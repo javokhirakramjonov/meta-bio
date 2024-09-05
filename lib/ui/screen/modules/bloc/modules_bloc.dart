@@ -12,8 +12,7 @@ part 'modules_bloc.freezed.dart';
 part 'modules_event.dart';
 part 'modules_state.dart';
 
-class ModulesBloc
-    extends RequestStateErrorHandlerBloc<ModulesEvent, ModulesState>
+class ModulesBloc extends RequestStateHandlerBloc<ModulesEvent, ModulesState>
     implements Observer<Profile?> {
   final ModuleRepository _moduleRepository;
 
@@ -42,7 +41,7 @@ class ModulesBloc
 
     final modulesRequestState = await _moduleRepository.getModules();
 
-    super.handleRequestStateError(modulesRequestState);
+    super.handleRequestState(modulesRequestState);
 
     emit(state.copyWith(modulesRequestState: modulesRequestState));
   }

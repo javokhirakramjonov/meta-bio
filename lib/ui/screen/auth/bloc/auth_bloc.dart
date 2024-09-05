@@ -10,7 +10,7 @@ part 'auth_bloc.freezed.dart';
 part 'auth_event.dart';
 part 'auth_state.dart';
 
-class AuthBloc extends RequestStateErrorHandlerBloc<AuthEvent, AuthState> {
+class AuthBloc extends RequestStateHandlerBloc<AuthEvent, AuthState> {
   final AuthRepository _authRepository;
 
   AuthBloc(this._authRepository, context)
@@ -33,7 +33,8 @@ class AuthBloc extends RequestStateErrorHandlerBloc<AuthEvent, AuthState> {
     RequestState<void> loginRequestState =
         await _authRepository.login(state.phoneNumber, state.password);
 
-    super.handleRequestStateError(loginRequestState);
+    super.handleRequestState(loginRequestState,
+        successMessage: 'Successfully logged in');
 
     emit(state.copyWith(loginRequestState: loginRequestState));
   }

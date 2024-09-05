@@ -14,8 +14,7 @@ part 'profile_bloc.freezed.dart';
 part 'profile_event.dart';
 part 'profile_state.dart';
 
-class ProfileBloc
-    extends RequestStateErrorHandlerBloc<ProfileEvent, ProfileState>
+class ProfileBloc extends RequestStateHandlerBloc<ProfileEvent, ProfileState>
     implements Observer<Profile?> {
   final AuthRepository _authRepository;
   final ImagePicker _picker = ImagePicker();
@@ -53,7 +52,7 @@ class ProfileBloc
 
     final response = await _authRepository.updateProfile(state.profile!);
 
-    super.handleRequestStateError(response);
+    super.handleRequestState(response, successMessage: 'Profile updated');
 
     emit(state.copyWith(updateProfileRequestState: response));
   }
@@ -68,7 +67,7 @@ class ProfileBloc
 
     final response = await _authRepository.updateAvatar(image.path);
 
-    super.handleRequestStateError(response);
+    super.handleRequestState(response, successMessage: 'Avatar updated');
 
     emit(state.copyWith(updateAvatarRequestState: response));
   }

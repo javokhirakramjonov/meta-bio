@@ -23,6 +23,7 @@ class _ExamsScreenState extends State<ExamsScreen> {
       create: (context) => ExamsBloc(GetIt.I.get(), context)
         ..add(ExamsEvent.started(widget.moduleId)),
       child: Scaffold(
+        backgroundColor: const Color(0xFF171717),
         appBar: AppBar(
           iconTheme: const IconThemeData(color: Color(0xFF0D0D0D)),
           shape: const RoundedRectangleBorder(
@@ -42,16 +43,7 @@ class _ExamsScreenState extends State<ExamsScreen> {
           ),
           centerTitle: true,
         ),
-        body: BlocConsumer<ExamsBloc, ExamsState>(
-          listener: (context, state) {
-            final examsRequestState = state.examsRequestState;
-
-            if (examsRequestState is RequestStateError<List<Exam>>) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(examsRequestState.errorMessage)),
-              );
-            }
-          },
+        body: BlocBuilder<ExamsBloc, ExamsState>(
           builder: (context, state) {
             final examsRequestState = state.examsRequestState;
 

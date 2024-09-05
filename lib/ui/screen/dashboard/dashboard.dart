@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meta_bio/ui/screen/leaderboard/leaderboard.dart';
 import 'package:meta_bio/ui/screen/modules/modules.dart';
 import 'package:meta_bio/ui/screen/profile/profile.dart';
 
@@ -20,7 +21,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         );
       },
     ),
-    const Text('Leaderboard Screen'),
+    const LeaderboardScreen(),
     const ProfileScreen(),
   ];
 

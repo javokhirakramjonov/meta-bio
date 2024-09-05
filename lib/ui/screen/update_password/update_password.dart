@@ -54,19 +54,7 @@ class _UpdatePasswordScreenState extends State<UpdatePasswordScreen> {
             }
 
             if (state.updatePasswordRequestState is RequestStateSuccess) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Password updated successfully'),
-                ),
-              );
-
               Navigator.pop(context);
-            } else if (state.updatePasswordRequestState is RequestStateError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Failed to update password'),
-                ),
-              );
             }
           },
           builder: (context, state) {

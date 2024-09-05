@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:meta_bio/domain/exam_result.dart';
+import 'package:meta_bio/domain/exam_leader.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/ui/screen/exam_result/bloc/exam_result_bloc.dart';
 
-class LeaderBoardTab extends StatelessWidget {
-  final RequestState<List<ExamResult>> allStudentsExamResultRequestState;
+class LeaderBoardTab extends StatefulWidget {
+  final RequestState<List<ExamLeader>> allStudentsExamResultRequestState;
 
   const LeaderBoardTab(
       {super.key, required this.allStudentsExamResultRequestState});
 
   @override
+  State<LeaderBoardTab> createState() => _LeaderBoardTabState();
+}
+
+class _LeaderBoardTabState extends State<LeaderBoardTab> {
+  @override
   Widget build(BuildContext context) {
-    if (allStudentsExamResultRequestState is RequestStateLoading) {
+    if (widget.allStudentsExamResultRequestState is RequestStateLoading) {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (allStudentsExamResultRequestState
-        is! RequestStateSuccess<List<ExamResult>>) {
+    if (widget.allStudentsExamResultRequestState
+        is! RequestStateSuccess<List<ExamLeader>>) {
       return const SizedBox.shrink();
     }
 
-    final allStudentsExamResult = (allStudentsExamResultRequestState
-            as RequestStateSuccess<List<ExamResult>>)
+    final allStudentsExamResult = (widget.allStudentsExamResultRequestState
+            as RequestStateSuccess<List<ExamLeader>>)
         .data;
 
     return Expanded(
@@ -50,12 +55,12 @@ class LeaderBoardTab extends StatelessWidget {
                     const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                 child: Row(
                   children: [
-                    Text(examItemResult.user.rank.toString(),
+                    Text(examItemResult.rank.toString(),
                         style: const TextStyle(color: Color(0xFFC5CCDB))),
                     const SizedBox(width: 16),
                     CircleAvatar(
                       radius: 28,
-                      backgroundColor: const Color(0xFF012950),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       child: ClipOval(
                         child: Image.asset(
                           'assets/images/avatar.png',
@@ -111,7 +116,8 @@ class LeaderBoardTab extends StatelessWidget {
                         borderRadius: BorderRadius.all(Radius.circular(60)),
                       ),
                       child: Text(
-                        examItemResult.duration,
+                        examItemResult.duration
+                            .substring(0, examItemResult.duration.indexOf('.')),
                         style: const TextStyle(
                           color: Color(0xFFC5CCDB),
                           fontSize: 12,

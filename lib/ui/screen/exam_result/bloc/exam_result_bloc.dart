@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:meta_bio/domain/exam_leader.dart';
 import 'package:meta_bio/domain/exam_result.dart';
 import 'package:meta_bio/domain/profile.dart';
 import 'package:meta_bio/domain/request_state.dart';
@@ -13,7 +14,7 @@ part 'exam_result_event.dart';
 part 'exam_result_state.dart';
 
 class ExamResultBloc
-    extends RequestStateErrorHandlerBloc<ExamResultEvent, ExamResultState>
+    extends RequestStateHandlerBloc<ExamResultEvent, ExamResultState>
     implements Observer<Profile?> {
   final int _examId;
   final ExamRepository _examRepository;
@@ -32,7 +33,7 @@ class ExamResultBloc
 
     final response = await _examRepository.getAllStudentsExamResults(_examId);
 
-    super.handleRequestStateError(response);
+    super.handleRequestState(response);
 
     emit(state.copyWith(allStudentsExamResultRequestState: response));
   }

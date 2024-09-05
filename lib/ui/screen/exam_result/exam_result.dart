@@ -20,8 +20,7 @@ class ExamResultScreen extends StatelessWidget {
           ExamResultBloc(GetIt.I.get(), examId, examResult, context)
             ..add(const Started()),
       child: Scaffold(
-        body: BlocConsumer<ExamResultBloc, ExamResultState>(
-          listener: (context, state) {},
+        body: BlocBuilder<ExamResultBloc, ExamResultState>(
           builder: (context, state) {
             return Stack(
               children: [
