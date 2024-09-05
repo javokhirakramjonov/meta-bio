@@ -14,7 +14,7 @@ part 'quiz_bloc.freezed.dart';
 part 'quiz_event.dart';
 part 'quiz_state.dart';
 
-class QuizBloc extends RequestStateErrorHandlerBloc<QuizEvent, QuizState> {
+class QuizBloc extends RequestStateHandlerBloc<QuizEvent, QuizState> {
   final ExamRepository _examRepository;
   StreamSubscription<int>? _tickerSubscription;
 
@@ -38,7 +38,7 @@ class QuizBloc extends RequestStateErrorHandlerBloc<QuizEvent, QuizState> {
     final questionsRequestState =
         await _examRepository.getQuestions(state.examId);
 
-    super.handleRequestStateError(questionsRequestState);
+    super.handleRequestState(questionsRequestState);
 
     var questions = <Question>[];
     Map<int, Set<int>> selectedVariantIds = {};
@@ -65,7 +65,7 @@ class QuizBloc extends RequestStateErrorHandlerBloc<QuizEvent, QuizState> {
     final readyToStartRequestState =
         await _examRepository.readyToStart(state.examId);
 
-    super.handleRequestStateError(readyToStartRequestState);
+    super.handleRequestState(readyToStartRequestState);
 
     if (readyToStartRequestState is RequestStateSuccess<void>) {
       _startTimer();
@@ -119,7 +119,8 @@ class QuizBloc extends RequestStateErrorHandlerBloc<QuizEvent, QuizState> {
     final submitRequestState =
         await _examRepository.submit(state.examId, answers);
 
-    super.handleRequestStateError(submitRequestState);
+    super.handleRequestState(submitRequestState,
+        successMessage: 'Successfully submitted');
 
     emit(state.copyWith(submitRequestState: submitRequestState));
   }

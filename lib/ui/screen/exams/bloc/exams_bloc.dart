@@ -9,7 +9,7 @@ part 'exams_bloc.freezed.dart';
 part 'exams_event.dart';
 part 'exams_state.dart';
 
-class ExamsBloc extends RequestStateErrorHandlerBloc<ExamsEvent, ExamsState> {
+class ExamsBloc extends RequestStateHandlerBloc<ExamsEvent, ExamsState> {
   final ExamRepository _examRepository;
 
   ExamsBloc(this._examRepository, context)
@@ -24,7 +24,7 @@ class ExamsBloc extends RequestStateErrorHandlerBloc<ExamsEvent, ExamsState> {
 
     final examsRequestState = await _examRepository.getExams(event.moduleId);
 
-    super.handleRequestStateError(examsRequestState);
+    super.handleRequestState(examsRequestState);
 
     emit(state.copyWith(examsRequestState: examsRequestState));
   }

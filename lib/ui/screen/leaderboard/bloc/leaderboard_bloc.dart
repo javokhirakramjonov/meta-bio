@@ -10,7 +10,7 @@ part 'leaderboard_event.dart';
 part 'leaderboard_state.dart';
 
 class LeaderboardBloc
-    extends RequestStateErrorHandlerBloc<LeaderboardEvent, LeaderboardState> {
+    extends RequestStateHandlerBloc<LeaderboardEvent, LeaderboardState> {
   final LeaderboardRepository _leaderboardRepository;
 
   LeaderboardBloc(this._leaderboardRepository, context)
@@ -24,7 +24,7 @@ class LeaderboardBloc
 
     final requestState = await _leaderboardRepository.getLeaderboard();
 
-    super.handleRequestStateError(requestState);
+    super.handleRequestState(requestState);
 
     emit(state.copyWith(leaderboardRequestState: requestState));
   }

@@ -9,8 +9,8 @@ part 'update_password_bloc.freezed.dart';
 part 'update_password_event.dart';
 part 'update_password_state.dart';
 
-class UpdatePasswordBloc extends RequestStateErrorHandlerBloc<
-    UpdatePasswordEvent, UpdatePasswordState> {
+class UpdatePasswordBloc
+    extends RequestStateHandlerBloc<UpdatePasswordEvent, UpdatePasswordState> {
   final AuthRepository _authRepository;
   final FlutterSecureStorage _secureStorage;
 
@@ -61,7 +61,8 @@ class UpdatePasswordBloc extends RequestStateErrorHandlerBloc<
     final requestState =
         await _authRepository.updatePassword(state.newPassword);
 
-    super.handleRequestStateError(requestState);
+    super.handleRequestState(requestState,
+        successMessage: 'Successfully updated the password');
 
     emit(state.copyWith(updatePasswordRequestState: requestState));
   }

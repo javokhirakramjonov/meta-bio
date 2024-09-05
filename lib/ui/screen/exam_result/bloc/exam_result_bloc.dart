@@ -14,7 +14,7 @@ part 'exam_result_event.dart';
 part 'exam_result_state.dart';
 
 class ExamResultBloc
-    extends RequestStateErrorHandlerBloc<ExamResultEvent, ExamResultState>
+    extends RequestStateHandlerBloc<ExamResultEvent, ExamResultState>
     implements Observer<Profile?> {
   final int _examId;
   final ExamRepository _examRepository;
@@ -33,7 +33,7 @@ class ExamResultBloc
 
     final response = await _examRepository.getAllStudentsExamResults(_examId);
 
-    super.handleRequestStateError(response);
+    super.handleRequestState(response);
 
     emit(state.copyWith(allStudentsExamResultRequestState: response));
   }
@@ -44,6 +44,7 @@ class ExamResultBloc
   }
 
   void _started(Started event, Emitter<ExamResultState> emit) async {
+    add(const LoadAllStudentsExamResults());
     globalProfileObservable.addListener(this);
   }
 

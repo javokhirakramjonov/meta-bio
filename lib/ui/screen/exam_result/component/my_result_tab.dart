@@ -149,7 +149,8 @@ class MyResultTab extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    examResult.duration,
+                    examResult.duration
+                        .substring(0, examResult.duration.indexOf('.')),
                     style: const TextStyle(
                       color: Color(0xFFC5CCDB),
                       fontSize: 20,
@@ -171,14 +172,15 @@ class MyResultTab extends StatelessWidget {
           ],
         ),
       ),
-      Transform.scale(
-        scale: 2,
-        child: LottieBuilder.asset(
-          height: 400,
-          'assets/animations/congrats.json',
-          repeat: false,
+      if (examResult.score > 0)
+        Transform.scale(
+          scale: 2,
+          child: LottieBuilder.asset(
+            height: 400,
+            'assets/animations/congrats.json',
+            repeat: false,
+          ),
         ),
-      ),
     ]);
   }
 }

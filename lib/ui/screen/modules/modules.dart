@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -24,10 +22,8 @@ class _ModulesScreenState extends State<ModulesScreen> {
       create: (context) => ModulesBloc(GetIt.I.get(), context)
         ..add(const ModulesEvent.started()),
       child: Scaffold(
-        body: BlocConsumer<ModulesBloc, ModulesState>(
-          listener: (context, state) {
-            //TODO: implement listener
-          },
+        backgroundColor: const Color(0xFF171717),
+        body: BlocBuilder<ModulesBloc, ModulesState>(
           builder: (context, state) {
             final modulesRequestState = state.modulesRequestState;
 
@@ -73,7 +69,7 @@ class _ModulesScreenState extends State<ModulesScreen> {
   }
 
   Widget _buildHeaderRow(Profile? profile) {
-    final avatar = profile?.avatar;
+    final avatar = profile?.avatar ?? "";
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -81,8 +77,8 @@ class _ModulesScreenState extends State<ModulesScreen> {
         const SizedBox(width: 20),
         CircleAvatar(
           radius: 24,
-          backgroundImage: avatar != null
-              ? FileImage(File(avatar))
+          backgroundImage: avatar != ""
+              ? NetworkImage(avatar)
               : const AssetImage('assets/images/avatar.png'),
         ),
         const SizedBox(width: 12),

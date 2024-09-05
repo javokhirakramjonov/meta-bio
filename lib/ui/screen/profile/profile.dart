@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -6,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/ui/component/loading_view.dart';
-import 'package:meta_bio/ui/component/snackbar.dart';
 import 'package:meta_bio/ui/screen/profile/bloc/profile_bloc.dart';
 import 'package:meta_bio/ui/screen/splash/splash.dart';
 import 'package:meta_bio/ui/screen/update_password/update_password.dart';
@@ -60,9 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         body: BlocConsumer<ProfileBloc, ProfileState>(
           listener: (context, state) {
             _updateTextControllers(state);
-            _handleUpdateProfileRequestState(context, state);
             _handleLogOutRequestState(context, state);
-            _handleUpdateAvatarRequestState(context, state);
           },
           builder: (context, state) {
             return Stack(children: [
@@ -96,15 +92,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     lastNameController.text = state.profile?.lastName ?? "";
   }
 
-  void _handleUpdateProfileRequestState(
-      BuildContext context, ProfileState state) {
-    final updateProfileRequestState = state.updateProfileRequestState;
-
-    if (updateProfileRequestState is RequestStateSuccess) {
-      showSuccessSnackBar(context, 'Profile updated successfully');
-    }
-  }
-
   void _handleLogOutRequestState(BuildContext context, ProfileState state) {
     if (state.shouldLogOut) {
       Navigator.pushAndRemoveUntil(
@@ -112,15 +99,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         MaterialPageRoute(builder: (context) => const SplashScreen()),
         (route) => false,
       );
-    }
-  }
-
-  void _handleUpdateAvatarRequestState(
-      BuildContext context, ProfileState state) {
-    final updateAvatarRequestState = state.updateAvatarRequestState;
-
-    if (updateAvatarRequestState is RequestStateSuccess) {
-      showSuccessSnackBar(context, 'Avatar updated successfully');
     }
   }
 
@@ -151,7 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProfileImage(BuildContext context, ProfileState state) {
-    var avatar = state.profile?.avatar;
+    var avatar = state.profile?.avatar ?? "";
 
     return Center(
       child: Stack(
@@ -173,9 +151,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding: const EdgeInsets.all(8.0),
                       child: CircleAvatar(
                           backgroundColor: Colors.transparent,
-                          backgroundImage: avatar == null
+                          backgroundImage: avatar == ""
                               ? const AssetImage('assets/images/avatar.png')
-                              : FileImage(File(avatar))),
+                              : NetworkImage(avatar)),
                     ),
                   )),
             ),

@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -7,7 +6,6 @@ import 'package:meta_bio/domain/profile.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/service/dio_provider.dart';
 import 'package:meta_bio/util/global.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRepository {
@@ -63,21 +61,7 @@ class AuthRepository {
     }
   }
 
-  Future<void> _saveProfile(Profile profile,
-      {bool shouldDownloadImage = true}) async {
-    if (shouldDownloadImage) {
-      DateTime now = DateTime.now();
-
-      final avatarFileName =
-          "${now.toString()}.${profile.avatar.split('.').last}";
-
-      if (profile.avatar.isNotEmpty) {
-        var avatarFile = await _downloadImage(profile.avatar, avatarFileName);
-
-        profile = profile.copyWith(avatar: avatarFile.path);
-      }
-    }
-
+  Future<void> _saveProfile(Profile profile) async {
     await _sharedPreferences.setString('profile', jsonEncode(profile));
 
     globalProfileObservable.value = profile;
@@ -92,8 +76,7 @@ class AuthRepository {
 
       final profile = Profile.fromJson(response.data['data']);
 
-      await _saveProfile(profile.copyWith(avatar: profileToUpdate.avatar),
-          shouldDownloadImage: false);
+      await _saveProfile(profile.copyWith(avatar: profileToUpdate.avatar));
 
       return const RequestState.success(null);
     } on DioException catch (e) {
@@ -101,16 +84,6 @@ class AuthRepository {
     } catch (e) {
       return RequestState.error(e.toString());
     }
-  }
-
-  Future<File> _downloadImage(String url, String fileName) async {
-    final directory = await getApplicationDocumentsDirectory();
-
-    final filePath = '${directory.path}/images/$fileName';
-
-    await _dio.download(url, filePath);
-
-    return File(filePath);
   }
 
   Future<RequestState> updatePassword(String newPassword) async {

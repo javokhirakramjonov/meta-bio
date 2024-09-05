@@ -33,7 +33,7 @@ class ExamItem extends StatelessWidget {
               buildTitle(),
               buildDivider(),
               buildRow(context),
-              if (exam.submissionsCount > 0) ...[
+              if (exam.result != null) ...[
                 buildDivider(),
                 buildResultRow(context),
               ],
@@ -120,7 +120,9 @@ class ExamItem extends StatelessWidget {
               children: [
                 const Icon(Icons.timer, color: Color(0xFFF7D426), size: 18),
                 const SizedBox(width: 4),
-                Text(examItemResult.duration,
+                Text(
+                    examItemResult.duration
+                        .substring(0, examItemResult.duration.indexOf('.')),
                     style: const TextStyle(color: Color(0xFFC5CCDB))),
               ],
             ),

@@ -63,9 +63,10 @@ class LeaderboardItem extends StatelessWidget {
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.primary,
             shape: BoxShape.circle,
-            image: const DecorationImage(
-              image: NetworkImage(
-                  'https://cdn-icons-png.flaticon.com/512/6596/6596121.png'),
+            image: DecorationImage(
+              image: leader.user.avatar != ""
+                  ? NetworkImage(leader.user.avatar)
+                  : const AssetImage('assets/images/avatar.png'),
               fit: BoxFit.cover,
             ),
           ),

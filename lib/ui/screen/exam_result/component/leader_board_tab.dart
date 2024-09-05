@@ -17,12 +17,6 @@ class LeaderBoardTab extends StatefulWidget {
 
 class _LeaderBoardTabState extends State<LeaderBoardTab> {
   @override
-  void initState() {
-    context.read<ExamResultBloc>().add(const LoadAllStudentsExamResults());
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     if (widget.allStudentsExamResultRequestState is RequestStateLoading) {
       return const Center(child: CircularProgressIndicator());
@@ -122,7 +116,8 @@ class _LeaderBoardTabState extends State<LeaderBoardTab> {
                         borderRadius: BorderRadius.all(Radius.circular(60)),
                       ),
                       child: Text(
-                        examItemResult.duration,
+                        examItemResult.duration
+                            .substring(0, examItemResult.duration.indexOf('.')),
                         style: const TextStyle(
                           color: Color(0xFFC5CCDB),
                           fontSize: 12,
