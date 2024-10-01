@@ -16,13 +16,13 @@ abstract class RequestStateHandlerBloc<Event, State>
   final _errorMessages = StreamController<String>.broadcast();
 
   void handleRequestState(RequestState requestState,
-      {String? successMessage, String? errorMessage}) {
+      {String? successMessage, String? defaultErrorMessage}) {
     if (requestState is RequestStateSuccess<Object?>) {
       if (successMessage != null) {
         _successMessages.add(successMessage);
       }
     } else if (requestState is RequestStateError) {
-      _errorMessages.add(errorMessage ?? requestState.errorMessage);
+      _errorMessages.add(defaultErrorMessage ?? requestState.errorMessage);
     }
   }
 

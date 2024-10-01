@@ -3,8 +3,11 @@ import 'package:meta_bio/domain/answer.dart';
 import 'package:meta_bio/domain/exam.dart';
 import 'package:meta_bio/domain/exam_leader.dart';
 import 'package:meta_bio/domain/exam_result.dart';
+import 'package:meta_bio/domain/exam_result_review_item.dart';
 import 'package:meta_bio/domain/question.dart';
+import 'package:meta_bio/domain/question_type.dart';
 import 'package:meta_bio/domain/request_state.dart';
+import 'package:meta_bio/domain/variant.dart';
 import 'package:meta_bio/service/dio_provider.dart';
 import 'package:meta_bio/util/global.dart';
 
@@ -92,6 +95,42 @@ class ExamRepository {
       await _dio.post('/api/exams/$examId/start');
 
       return const RequestState.success(null);
+    } on DioException catch (e) {
+      return RequestState.error(e.message.toString());
+    } catch (e) {
+      return RequestState.error(e.toString());
+    }
+  }
+
+  Future<RequestState<List<ExamResultReviewItem>>> getExamResultReviewItems(
+      int examId) async {
+    try {
+      // final response = await _dio.get('/api/exams/$examId/results/review');
+
+      // final examResultReviewItems = (response.data['data'] as List)
+      //     .map((e) => ExamResultReviewItem.fromJson(e))
+      //     .toList();
+
+      final examResultReviewItems = List.generate(10, (index) {
+        return ExamResultReviewItem(
+          question: Question(
+              id: index,
+              text: 'Question $index',
+              variants: List.generate(4, (index) {
+                return Variant(
+                  id: index,
+                  text: 'Option $index',
+                );
+              }),
+              mark: 1,
+              type: QuestionType.singleChoice,
+              rank: index),
+          selectedVariantIds: {index % 4},
+          correctVariantIds: {1},
+        );
+      });
+
+      return RequestState.success(examResultReviewItems);
     } on DioException catch (e) {
       return RequestState.error(e.message.toString());
     } catch (e) {

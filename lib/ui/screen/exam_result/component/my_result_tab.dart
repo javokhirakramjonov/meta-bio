@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:meta_bio/domain/exam_result.dart';
+import 'package:meta_bio/ui/screen/exam_result_review/exam_result_review.dart';
 
 class MyResultTab extends StatelessWidget {
   final ExamResult examResult;
+  final int examId;
 
-  const MyResultTab({super.key, required this.examResult});
+  const MyResultTab(
+      {super.key, required this.examResult, required this.examId});
 
   @override
   Widget build(BuildContext context) {
@@ -169,6 +172,8 @@ class MyResultTab extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 8),
+            _openExamReviewButton(context),
           ],
         ),
       ),
@@ -182,5 +187,34 @@ class MyResultTab extends StatelessWidget {
           ),
         ),
     ]);
+  }
+
+  Widget _openExamReviewButton(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 75,
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ExamResultReviewScreen(examId: examId),
+            ),
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(50),
+        ),
+        child: const Padding(
+          padding: EdgeInsets.all(18.0),
+          child: Text(
+            'See exam result review',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+        ),
+      ),
+    );
   }
 }

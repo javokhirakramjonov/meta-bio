@@ -69,7 +69,7 @@ class AuthScreen extends StatelessWidget {
         height: diameter,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [primary1, primary2],
+            colors: [primary, secondary],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),

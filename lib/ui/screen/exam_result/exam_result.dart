@@ -29,7 +29,9 @@ class ExamResultScreen extends StatelessWidget {
                   children: [
                     _buildHeader(context, state),
                     const SizedBox(height: 20),
-                    Expanded(child: ExamResultTabs(examResultState: state)),
+                    Expanded(
+                        child: ExamResultTabs(
+                            examResultState: state, examId: examId)),
                     const SizedBox(height: 20),
                     _buildBackButton(context),
                   ],
