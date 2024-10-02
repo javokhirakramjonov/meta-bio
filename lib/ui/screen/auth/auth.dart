@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:meta_bio/domain/request_state.dart';
 import 'package:meta_bio/ui/component/loading_view.dart';
-import 'package:meta_bio/ui/component/snackbar.dart';
 import 'package:meta_bio/ui/screen/auth/bloc/auth_bloc.dart';
 import 'package:meta_bio/ui/screen/dashboard/dashboard.dart';
 import 'package:meta_bio/ui/theme/my_theme.dart';
@@ -39,8 +38,6 @@ class AuthScreen extends StatelessWidget {
     final loginRequestState = state.loginRequestState;
 
     if (loginRequestState is RequestStateSuccess) {
-      showSuccessSnackBar(context, 'Successfully logged in');
-
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
           builder: (context) => const DashboardScreen(),
