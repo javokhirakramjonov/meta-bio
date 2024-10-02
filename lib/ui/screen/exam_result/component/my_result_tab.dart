@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:lottie/lottie.dart';
 import 'package:meta_bio/domain/exam_result.dart';
+import 'package:meta_bio/ui/screen/exam_result_review/exam_result_review.dart';
 
 class MyResultTab extends StatelessWidget {
   final ExamResult examResult;
@@ -169,18 +170,52 @@ class MyResultTab extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 8),
+            _openExamReviewButton(context),
           ],
         ),
       ),
       if (examResult.score > 0)
-        Transform.scale(
-          scale: 2,
-          child: LottieBuilder.asset(
-            height: 400,
-            'assets/animations/congrats.json',
-            repeat: false,
+        IgnorePointer(
+          child: Transform.scale(
+            scale: 2,
+            child: LottieBuilder.asset(
+              height: 400,
+              'assets/animations/congrats.json',
+              repeat: false,
+            ),
           ),
         ),
     ]);
+  }
+
+  Widget _openExamReviewButton(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 75,
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) =>
+                  ExamResultReviewScreen(resultId: examResult.id),
+            ),
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(50),
+        ),
+        child: const Padding(
+          padding: EdgeInsets.all(18.0),
+          child: Text(
+            'See exam result review',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+        ),
+      ),
+    );
   }
 }

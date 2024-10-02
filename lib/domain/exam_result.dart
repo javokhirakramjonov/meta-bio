@@ -5,6 +5,7 @@ part 'exam_result.g.dart';
 
 @JsonSerializable()
 class ExamResult {
+  final int id;
   final User user;
   final int score;
   final int correctCount;
@@ -12,6 +13,7 @@ class ExamResult {
   final String duration;
 
   ExamResult({
+    required this.id,
     required this.user,
     required this.score,
     required this.correctCount,
