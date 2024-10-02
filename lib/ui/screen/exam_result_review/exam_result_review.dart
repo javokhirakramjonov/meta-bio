@@ -10,9 +10,9 @@ import 'package:meta_bio/ui/screen/exam_result_review/component/exam_result_revi
 import 'package:scrollview_observer/scrollview_observer.dart';
 
 class ExamResultReviewScreen extends StatefulWidget {
-  final int examId;
+  final int resultId;
 
-  const ExamResultReviewScreen({super.key, required this.examId});
+  const ExamResultReviewScreen({super.key, required this.resultId});
 
   @override
   State<ExamResultReviewScreen> createState() => _ExamResultReviewScreenState();
@@ -26,7 +26,7 @@ class _ExamResultReviewScreenState extends State<ExamResultReviewScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => ExamResultReviewBloc(GetIt.I.get(), context)
-        ..add(ExamResultReviewEvent.started(widget.examId)),
+        ..add(ExamResultReviewEvent.started(widget.resultId)),
       child: Scaffold(
         backgroundColor: const Color(0xFF171717),
         appBar: AppBar(
@@ -77,7 +77,7 @@ class _ExamResultReviewScreenState extends State<ExamResultReviewScreen> {
                     onRefresh: () async {
                       context
                           .read<ExamResultReviewBloc>()
-                          .add(ExamResultReviewEvent.started(widget.examId));
+                          .add(ExamResultReviewEvent.started(widget.resultId));
                     },
                     child: examResultReviewItemsState
                             is RequestStateSuccess<List<ExamResultReviewItem>>

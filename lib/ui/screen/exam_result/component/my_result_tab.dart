@@ -6,10 +6,8 @@ import 'package:meta_bio/ui/screen/exam_result_review/exam_result_review.dart';
 
 class MyResultTab extends StatelessWidget {
   final ExamResult examResult;
-  final int examId;
 
-  const MyResultTab(
-      {super.key, required this.examResult, required this.examId});
+  const MyResultTab({super.key, required this.examResult});
 
   @override
   Widget build(BuildContext context) {
@@ -190,14 +188,15 @@ class MyResultTab extends StatelessWidget {
   }
 
   Widget _openExamReviewButton(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       height: 75,
       child: ElevatedButton(
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => ExamResultReviewScreen(examId: examId),
+              builder: (context) =>
+                  ExamResultReviewScreen(resultId: examResult.id),
             ),
           );
         },

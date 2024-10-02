@@ -20,18 +20,18 @@ class ExamResultReviewBloc extends RequestStateHandlerBloc<
 
   Future<void> _started(
       Started event, Emitter<ExamResultReviewState> emit) async {
-    await loadExamResultReview(event.examId, emit);
+    await loadExamResultReview(event.resultId, emit);
   }
 
   Future<void> loadExamResultReview(
-      int examId, Emitter<ExamResultReviewState> emit) async {
+      int resultId, Emitter<ExamResultReviewState> emit) async {
     emit(state.copyWith(
         examResultReviewItemsState: const RequestStateLoading()));
 
     await Future.delayed(const Duration(milliseconds: 200));
 
     final examResultReview =
-        await _examRepository.getExamResultReviewItems(examId);
+        await _examRepository.getExamResultReviewItems(resultId);
 
     handleRequestState(examResultReview,
         defaultErrorMessage: 'Failed to load exam result review');

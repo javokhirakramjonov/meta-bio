@@ -6,10 +6,8 @@ import 'package:meta_bio/ui/screen/exam_result/component/my_result_tab.dart';
 
 class ExamResultTabs extends StatefulWidget {
   final ExamResultState examResultState;
-  final int examId;
 
-  const ExamResultTabs(
-      {super.key, required this.examResultState, required this.examId});
+  const ExamResultTabs({super.key, required this.examResultState});
 
   @override
   State<ExamResultTabs> createState() => _ExamResultTabsState();
@@ -42,9 +40,7 @@ class _ExamResultTabsState extends State<ExamResultTabs> {
         ),
         const SizedBox(height: 20),
         currentTab == ExamResultTab.myResult
-            ? MyResultTab(
-                examResult: widget.examResultState.examResult,
-                examId: widget.examId)
+            ? MyResultTab(examResult: widget.examResultState.examResult)
             : LeaderBoardTab(
                 allStudentsExamResultRequestState:
                     widget.examResultState.allStudentsExamResultRequestState),
