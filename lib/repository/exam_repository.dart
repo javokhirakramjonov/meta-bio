@@ -109,25 +109,6 @@ class ExamRepository {
           .map((e) => ExamResultReviewItem.fromJson(e))
           .toList();
 
-      // final examResultReviewItems = List.generate(10, (index) {
-      //   return ExamResultReviewItem(
-      //     question: Question(
-      //         id: index,
-      //         text: 'Question $index',
-      //         variants: List.generate(4, (index) {
-      //           return Variant(
-      //             id: index,
-      //             text: 'Option $index',
-      //           );
-      //         }),
-      //         mark: 1,
-      //         type: QuestionType.singleChoice,
-      //         rank: index),
-      //     selectedVariantIds: {index % 4},
-      //     correctVariantIds: {1},
-      //   );
-      // });
-
       return RequestState.success(examResultReviewItems);
     } on DioException catch (e) {
       return RequestState.error(e.message.toString());
