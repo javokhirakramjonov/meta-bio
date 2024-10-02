@@ -176,12 +176,14 @@ class MyResultTab extends StatelessWidget {
         ),
       ),
       if (examResult.score > 0)
-        Transform.scale(
-          scale: 2,
-          child: LottieBuilder.asset(
-            height: 400,
-            'assets/animations/congrats.json',
-            repeat: false,
+        IgnorePointer(
+          child: Transform.scale(
+            scale: 2,
+            child: LottieBuilder.asset(
+              height: 400,
+              'assets/animations/congrats.json',
+              repeat: false,
+            ),
           ),
         ),
     ]);
